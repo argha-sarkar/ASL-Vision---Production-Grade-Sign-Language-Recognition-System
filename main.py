@@ -20,6 +20,11 @@ from src.profiling.statistics import DatasetStatistics
 from src.visualization.plots import DatasetPlots
 
 
+from src.preprocessing.image_processor import ImageProcessor
+from src.preprocessing.normalization import ImageNormalization
+from src.preprocessing.tensor_converter import TensorConverter
+
+
 def validate_dataset(dataset_name: str, dataframe):
     """
     Validate a dataset and print validation results.
@@ -128,6 +133,46 @@ def main():
 
     print()
 
+    
+    
+# -------------------------------
+# Image Reconstruction
+# -------------------------------
+
+    images = ImageProcessor.reconstruct_images(train_df)
+
+    labels = train_df["label"].values
+
+    print(f"Images Shape : {images.shape}")
+
+    DatasetPlots.show_random_images(
+        images,
+        labels
+    )
+
+    DatasetPlots.show_class_examples(
+        images,
+        labels
+    )
+
+    DatasetPlots.pixel_histogram(images)
+
+    DatasetPlots.mean_image(images)
+
+    DatasetPlots.median_image(images)
+
+    normalized_images = ImageNormalization.normalize(images)
+
+    tensor_images = TensorConverter.to_tensor(
+        normalized_images
+    )
+
+    print("Tensor Shape :", tensor_images.shape)
+    
+    
+    
+    print()
+    
     print("=" * 70)
     print("Pipeline Completed Successfully")
     print("=" * 70)
@@ -135,3 +180,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+    
+    
