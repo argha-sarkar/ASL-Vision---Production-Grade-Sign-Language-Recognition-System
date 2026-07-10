@@ -1,0 +1,35 @@
+# Virtual Environment
+.venv/
+
+# venv
+venv/
+
+data/raw/
+
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Models
+models/*.keras
+models/*.h5
+models/*.onnx
+
+# Logs
+logs/
+
+# MLflow
+mlruns/
+
+# VS Code
+.vscode/
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
