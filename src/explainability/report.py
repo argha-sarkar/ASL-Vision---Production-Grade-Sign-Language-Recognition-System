@@ -36,8 +36,7 @@ class ExplainabilityReport:
         report = {
             "model_name": model_name,
             "metrics": {
-                k: float(v) if hasattr(v, "item") else v
-                for k, v in metrics.items()
+                k: float(v) if hasattr(v, "item") else v for k, v in metrics.items()
             },
             "confidence_summary": confidence,
         }

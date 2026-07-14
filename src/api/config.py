@@ -20,9 +20,7 @@ class Settings(BaseSettings):
 
     VERSION: str = "1.0.0"
 
-    DESCRIPTION: str = (
-        "Production API for American Sign Language Recognition"
-    )
+    DESCRIPTION: str = "Production API for American Sign Language Recognition"
 
     HOST: str = "0.0.0.0"
 

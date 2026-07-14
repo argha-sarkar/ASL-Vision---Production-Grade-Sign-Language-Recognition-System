@@ -6,11 +6,11 @@ Production Deployment Script
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
 import argparse
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 
 class DeploymentPipeline:
@@ -27,11 +27,8 @@ class DeploymentPipeline:
         self.deploy_dir = self.root / "deployment"
 
         self.deploy_dir.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
     # ---------------------------------------------------------
@@ -43,15 +40,10 @@ class DeploymentPipeline:
         print("=" * 70)
 
         required = [
-
             self.args.model,
-
             "Dockerfile",
-
             "docker-compose.yml",
-
             "requirements.txt",
-
         ]
 
         missing = []
@@ -85,15 +77,10 @@ class DeploymentPipeline:
         print("=" * 70)
 
         folders = [
-
             "src",
-
             "configs",
-
             "models",
-
             "scripts",
-
         ]
 
         for folder in folders:
@@ -103,27 +90,17 @@ class DeploymentPipeline:
             if folder.exists():
 
                 shutil.copytree(
-
                     folder,
-
                     self.deploy_dir / folder.name,
-
                     dirs_exist_ok=True,
-
                 )
 
         files = [
-
             "Dockerfile",
-
             "docker-compose.yml",
-
             "requirements.txt",
-
             "requirements-api.txt",
-
             "README.md",
-
         ]
 
         for file in files:
@@ -133,11 +110,8 @@ class DeploymentPipeline:
             if file.exists():
 
                 shutil.copy2(
-
                     file,
-
                     self.deploy_dir,
-
                 )
 
     # ---------------------------------------------------------
@@ -149,23 +123,14 @@ class DeploymentPipeline:
         print("=" * 70)
 
         subprocess.run(
-
             [
-
                 "docker",
-
                 "build",
-
                 "-t",
-
                 self.args.image,
-
                 ".",
-
             ],
-
             check=True,
-
         )
 
     # ---------------------------------------------------------
@@ -177,40 +142,24 @@ class DeploymentPipeline:
         print("=" * 70)
 
         subprocess.run(
-
             [
-
                 "docker",
-
                 "run",
-
                 "-d",
-
                 "--name",
-
                 self.args.container,
-
                 "-p",
-
                 f"{self.args.port}:8000",
-
                 self.args.image,
-
             ],
-
             check=True,
-
         )
 
     # ---------------------------------------------------------
 
     def compose_up(self):
 
-        compose = Path(
-
-            "docker-compose.yml"
-
-        )
+        compose = Path("docker-compose.yml")
 
         if not compose.exists():
 
@@ -221,21 +170,13 @@ class DeploymentPipeline:
         print("=" * 70)
 
         subprocess.run(
-
             [
-
                 "docker",
-
                 "compose",
-
                 "up",
-
                 "-d",
-
             ],
-
             check=True,
-
         )
 
     # ---------------------------------------------------------
@@ -247,13 +188,9 @@ class DeploymentPipeline:
         print("=" * 70)
 
         archive = shutil.make_archive(
-
             base_name="ASL-Vision-Deployment",
-
             format="zip",
-
             root_dir=self.deploy_dir,
-
         )
 
         print()
@@ -266,31 +203,23 @@ class DeploymentPipeline:
 
     def health_check(self):
 
-        import requests
         import time
+
+        import requests
 
         print("=" * 70)
         print("HEALTH CHECK")
         print("=" * 70)
 
-        url = (
-
-            f"http://127.0.0.1:{self.args.port}"
-
-            "/api/v1/health"
-
-        )
+        url = f"http://127.0.0.1:{self.args.port}" "/api/v1/health"
 
         for _ in range(20):
 
             try:
 
                 response = requests.get(
-
                     url,
-
                     timeout=5,
-
                 )
 
                 if response.status_code == 200:
@@ -334,42 +263,30 @@ class DeploymentPipeline:
 # CLI
 # ---------------------------------------------------------
 
+
 def arguments():
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-
         "--model",
-
         default="models/best_model.keras",
-
     )
 
     parser.add_argument(
-
         "--image",
-
         default="asl-vision:latest",
-
     )
 
     parser.add_argument(
-
         "--container",
-
         default="asl-vision",
-
     )
 
     parser.add_argument(
-
         "--port",
-
         type=int,
-
         default=8000,
-
     )
 
     return parser.parse_args()

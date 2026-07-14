@@ -6,7 +6,6 @@ American Sign Language Recognition.
 """
 
 import tensorflow as tf
-
 from tensorflow.keras import Model
 from tensorflow.keras.layers import (
     Input,
@@ -21,8 +20,17 @@ from tensorflow.keras.layers import (
 
 
 class CNNModel:
-    def __init__(self, filters, dropout_rate, dense_units, learning_rate, optimizer, batch_size, input_shape, num_classes):
-        # Store these parameters as class attributes so they are accessible
+    def __init__(
+        self,
+        input_shape=(28, 28, 1),
+        num_classes=24,
+        filters=None,
+        dropout_rate=0.25,
+        dense_units=128,
+        learning_rate=0.001,
+        optimizer="adam",
+        batch_size=64,
+    ):
         self.filters = filters
         self.dropout_rate = dropout_rate
         self.dense_units = dense_units
@@ -31,10 +39,6 @@ class CNNModel:
         self.batch_size = batch_size
         self.input_shape = input_shape
         self.num_classes = num_classes
-        
-        # Now define your model structure using these variables
-        # For example:
-        # self.model = self.build_model()
 
     def build(self) -> Model:
         """

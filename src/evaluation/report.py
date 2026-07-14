@@ -7,9 +7,9 @@ for the trained CNN.
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
-from datetime import datetime
 import json
+from datetime import datetime
+from pathlib import Path
 
 
 class EvaluationReport:
@@ -29,8 +29,7 @@ class EvaluationReport:
         path = self.output_dir / "metrics.json"
         with open(path, "w") as f:
             json.dump(
-                {k: float(v) if hasattr(v, "item") else v
-                 for k, v in metrics.items()},
+                {k: float(v) if hasattr(v, "item") else v for k, v in metrics.items()},
                 f,
                 indent=4,
             )
@@ -65,7 +64,6 @@ class EvaluationReport:
 
 
 class ExplainabilityReport:
-
     """
     Generates a Markdown report summarizing
     the explainability outputs.
@@ -73,9 +71,7 @@ class ExplainabilityReport:
 
     def __init__(self):
 
-        self.output_dir = Path(
-            "reports/explainability"
-        )
+        self.output_dir = Path("reports/explainability")
 
         self.output_dir.mkdir(
             parents=True,
@@ -83,21 +79,13 @@ class ExplainabilityReport:
         )
 
     def generate(
-
         self,
-
         metrics: dict,
-
         confidence: dict,
-
         model_name="ASL CNN Baseline",
-
     ):
 
-        report_path = (
-            self.output_dir /
-            "explainability_report.md"
-        )
+        report_path = self.output_dir / "explainability_report.md"
 
         report = f"""# Explainability Report
 

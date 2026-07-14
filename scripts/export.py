@@ -6,8 +6,8 @@ Production Model Export Script
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
 import argparse
+from pathlib import Path
 
 import tensorflow as tf
 
@@ -39,11 +39,8 @@ class ModelExporter:
         self.export_dir = Path(export_dir)
 
         self.export_dir.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
         self.model = self.load_model()
@@ -58,17 +55,9 @@ class ModelExporter:
 
         if not self.model_path.exists():
 
-            raise FileNotFoundError(
+            raise FileNotFoundError(self.model_path)
 
-                self.model_path
-
-            )
-
-        return tf.keras.models.load_model(
-
-            self.model_path
-
-        )
+        return tf.keras.models.load_model(self.model_path)
 
     # ---------------------------------------------------------
 
@@ -77,11 +66,8 @@ class ModelExporter:
         output = self.export_dir / "saved_model"
 
         tf.saved_model.save(
-
             self.model,
-
             str(output),
-
         )
 
         print()
@@ -128,33 +114,18 @@ class ModelExporter:
 
     def export_tflite(self):
 
-        converter = (
-
-            tf.lite.TFLiteConverter.from_keras_model(
-
-                self.model
-
-            )
-
-        )
+        converter = tf.lite.TFLiteConverter.from_keras_model(self.model)
 
         tflite_model = converter.convert()
 
         output = self.export_dir / "model.tflite"
 
         with open(
-
             output,
-
             "wb",
-
         ) as file:
 
-            file.write(
-
-                tflite_model
-
-            )
+            file.write(tflite_model)
 
         print()
 
@@ -168,45 +139,20 @@ class ModelExporter:
 
     def export_quantized_tflite(self):
 
-        converter = (
+        converter = tf.lite.TFLiteConverter.from_keras_model(self.model)
 
-            tf.lite.TFLiteConverter.from_keras_model(
-
-                self.model
-
-            )
-
-        )
-
-        converter.optimizations = [
-
-            tf.lite.Optimize.DEFAULT
-
-        ]
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
 
         quantized = converter.convert()
 
-        output = (
-
-            self.export_dir /
-
-            "model_int8.tflite"
-
-        )
+        output = self.export_dir / "model_int8.tflite"
 
         with open(
-
             output,
-
             "wb",
-
         ) as file:
 
-            file.write(
-
-                quantized
-
-            )
+            file.write(quantized)
 
         print()
 
@@ -231,37 +177,22 @@ class ModelExporter:
         output = self.export_dir / "model.onnx"
 
         spec = (
-
             tf.TensorSpec(
-
                 (
-
                     None,
-
                     28,
-
                     28,
-
                     1,
-
                 ),
-
                 tf.float32,
-
                 name="input",
-
             ),
-
         )
 
         tf2onnx.convert.from_keras(
-
             self.model,
-
             input_signature=spec,
-
             output_path=str(output),
-
         )
 
         print()
@@ -280,19 +211,9 @@ class ModelExporter:
         print("VERIFY EXPORTS")
         print("=" * 70)
 
-        for file in sorted(
+        for file in sorted(self.export_dir.glob("*")):
 
-            self.export_dir.glob("*")
-
-        ):
-
-            print(
-
-                f"{file.name:<30}"
-
-                f"{file.stat().st_size / 1024 / 1024:.2f} MB"
-
-            )
+            print(f"{file.name:<30}" f"{file.stat().st_size / 1024 / 1024:.2f} MB")
 
     # ---------------------------------------------------------
 
@@ -345,28 +266,21 @@ class ModelExporter:
 # CLI
 # ---------------------------------------------------------
 
+
 def arguments():
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-
         "--model",
-
         default="models/best_model.keras",
-
         type=str,
-
     )
 
     parser.add_argument(
-
         "--output",
-
         default="exports",
-
         type=str,
-
     )
 
     return parser.parse_args()
@@ -381,11 +295,8 @@ if __name__ == "__main__":
     args = arguments()
 
     exporter = ModelExporter(
-
         model_path=args.model,
-
         export_dir=args.output,
-
     )
 
     exporter.run()

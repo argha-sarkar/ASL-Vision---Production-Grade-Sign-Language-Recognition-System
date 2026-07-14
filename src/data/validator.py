@@ -1,9 +1,6 @@
 import pandas as pd
 
-from src.data.schema import (
-    LABEL_COLUMN,
-    EXPECTED_PIXELS,
-)
+from src.data.schema import EXPECTED_PIXELS, LABEL_COLUMN
 
 
 class DataValidator:

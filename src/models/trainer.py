@@ -13,15 +13,15 @@ Responsibilities
 5. Save training history
 """
 
-from pathlib import Path
 import json
+from pathlib import Path
 from typing import Dict
 
 import tensorflow as tf
 
+from src.models.callbacks import CallbackManager
 from src.models.cnn import CNNModel
 from src.models.compiler import ModelCompiler
-from src.models.callbacks import CallbackManager
 
 
 class ModelTrainer:
@@ -52,9 +52,7 @@ class ModelTrainer:
             num_classes=self.num_classes,
         ).build()
 
-        model = ModelCompiler(
-            learning_rate=self.learning_rate
-        ).compile(model)
+        model = ModelCompiler(learning_rate=self.learning_rate).compile(model)
 
         return model
 
@@ -81,17 +79,11 @@ class ModelTrainer:
         callbacks = CallbackManager().build()
 
         history = model.fit(
-
             train_dataset,
-
             validation_data=validation_dataset,
-
             epochs=self.epochs,
-
             callbacks=callbacks,
-
             verbose=1,
-
         )
 
         self.save_history(history.history)

@@ -44,15 +44,10 @@ class ResNetModel(BaseTransferModel):
     def get_backbone(self):
 
         backbone = ResNet50(
-
             include_top=False,
-
             weights=self.weights,
-
             input_shape=self.input_shape,
-
             pooling=None,
-
         )
 
         return backbone
@@ -61,13 +56,9 @@ class ResNetModel(BaseTransferModel):
 if __name__ == "__main__":
 
     model_builder = ResNetModel(
-
         input_shape=(224, 224, 3),
-
         num_classes=24,
-
         trainable=False,
-
     )
 
     model = model_builder.build()

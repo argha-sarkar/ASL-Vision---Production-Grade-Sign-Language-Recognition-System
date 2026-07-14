@@ -24,9 +24,7 @@ class GradCAM:
 
         self.last_conv_layer = last_conv_layer
 
-        self.output_dir = Path(
-            "reports/explainability/gradcam"
-        )
+        self.output_dir = Path("reports/explainability/gradcam")
 
         self.output_dir.mkdir(
             parents=True,
@@ -39,19 +37,11 @@ class GradCAM:
     ):
 
         grad_model = tf.keras.models.Model(
-
             inputs=self.model.inputs,
-
             outputs=[
-
-                self.model.get_layer(
-                    self.last_conv_layer
-                ).output,
-
+                self.model.get_layer(self.last_conv_layer).output,
                 self.model.output,
-
             ],
-
         )
 
         image_tensor = tf.expand_dims(
@@ -61,13 +51,9 @@ class GradCAM:
 
         with tf.GradientTape() as tape:
 
-            conv_output, predictions = grad_model(
-                image_tensor
-            )
+            conv_output, predictions = grad_model(image_tensor)
 
-            predicted_class = tf.argmax(
-                predictions[0]
-            )
+            predicted_class = tf.argmax(predictions[0])
 
             loss = predictions[
                 :,
@@ -80,29 +66,22 @@ class GradCAM:
         )
 
         pooled_gradients = tf.reduce_mean(
-
             gradients,
-
             axis=(0, 1, 2),
-
         )
 
         conv_output = conv_output[0]
 
         heatmap = conv_output @ pooled_gradients[..., tf.newaxis]
 
-        heatmap = tf.squeeze(
-            heatmap
-        )
+        heatmap = tf.squeeze(heatmap)
 
         heatmap = tf.maximum(
             heatmap,
             0,
         )
 
-        heatmap /= tf.reduce_max(
-            heatmap
-        ) + 1e-10
+        heatmap /= tf.reduce_max(heatmap) + 1e-10
 
         return heatmap.numpy()
 
@@ -114,49 +93,30 @@ class GradCAM:
     ):
 
         heatmap = cv2.resize(
-
             heatmap,
-
             (28, 28),
-
         )
 
-        heatmap = np.uint8(
-            255 * heatmap
-        )
+        heatmap = np.uint8(255 * heatmap)
 
         colored = cv2.applyColorMap(
-
             heatmap,
-
             cv2.COLORMAP_JET,
-
         )
 
-        original = np.uint8(
-            image.squeeze() * 255
-        )
+        original = np.uint8(image.squeeze() * 255)
 
         original = cv2.cvtColor(
-
             original,
-
             cv2.COLOR_GRAY2BGR,
-
         )
 
         overlay = cv2.addWeighted(
-
             original,
-
             1 - alpha,
-
             colored,
-
             alpha,
-
             0,
-
         )
 
         return overlay
@@ -166,17 +126,35 @@ class GradCAM:
         image,
         filename,
     ):
+        """
+        Generate and save a Grad-CAM overlay.
 
-        heatmap = self.generate_heatmap(
-            image
-        )
+        Parameters
+        ----------
+        image : np.ndarray
+            Raw input image (H x W x C), before preprocessing.
+        filename : str
+            Output file path (absolute) or filename relative to output_dir.
+        """
+
+        # Preprocess for the model: resize → grayscale → normalize → add channel dim
+        processed = cv2.resize(image, (28, 28))
+        if processed.ndim == 3:
+            processed = cv2.cvtColor(processed, cv2.COLOR_BGR2GRAY)
+        processed = processed.astype("float32") / 255.0
+        processed = np.expand_dims(processed, axis=-1)  # (28,28,1)
+
+        heatmap = self.generate_heatmap(processed)
 
         overlay = self.overlay(
-            image,
+            processed,
             heatmap,
         )
 
-        save_path = self.output_dir / filename
+        # Resolve output path
+        out_path = Path(filename)
+        if not out_path.is_absolute():
+            out_path = self.output_dir / filename
 
         plt.figure(figsize=(4, 4))
 
@@ -192,10 +170,10 @@ class GradCAM:
         plt.tight_layout()
 
         plt.savefig(
-            save_path,
+            str(out_path),
             dpi=300,
         )
 
         plt.close()
 
-        return save_path
+        return out_path

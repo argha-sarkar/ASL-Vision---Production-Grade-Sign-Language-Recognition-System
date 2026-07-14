@@ -6,8 +6,8 @@ Generate a complete Transfer Learning Report.
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 
@@ -33,16 +33,11 @@ class TransferLearningReport:
 
     def load_results(self):
 
-        csv_path = (
-            self.report_dir /
-            "model_comparison.csv"
-        )
+        csv_path = self.report_dir / "model_comparison.csv"
 
         if not csv_path.exists():
 
-            raise FileNotFoundError(
-                f"{csv_path} not found."
-            )
+            raise FileNotFoundError(f"{csv_path} not found.")
 
         return pd.read_csv(csv_path)
 
@@ -50,19 +45,13 @@ class TransferLearningReport:
 
     def best_model(self, dataframe):
 
-        return dataframe.loc[
-            dataframe["Accuracy"].idxmax()
-        ]
+        return dataframe.loc[dataframe["Accuracy"].idxmax()]
 
     # ---------------------------------------------------------
 
     def create_table(self, dataframe):
 
-        markdown = (
-            dataframe.to_markdown(
-                index=False
-            )
-        )
+        markdown = dataframe.to_markdown(index=False)
 
         return markdown
 
@@ -119,9 +108,7 @@ Further improvements:
 
         dataframe = self.load_results()
 
-        best = self.best_model(
-            dataframe
-        )
+        best = self.best_model(dataframe)
 
         markdown = f"""# Transfer Learning Report
 
@@ -160,20 +147,13 @@ American Sign Language Recognition
 """
 
         ranking = dataframe.sort_values(
-
             by="Accuracy",
-
             ascending=False,
-
         )
 
         for i, row in ranking.iterrows():
 
-            markdown += (
-                f"{i+1}. "
-                f"{row['Model']} "
-                f"({row['Accuracy']:.4f})\n"
-            )
+            markdown += f"{i+1}. " f"{row['Model']} " f"({row['Accuracy']:.4f})\n"
 
         markdown += "\n---\n"
 
@@ -181,23 +161,14 @@ American Sign Language Recognition
 
         markdown += "\n---\n"
 
-        markdown += self.recommendations(
-            best
-        )
+        markdown += self.recommendations(best)
 
-        report_path = (
-            self.report_dir /
-            "transfer_learning_report.md"
-        )
+        report_path = self.report_dir / "transfer_learning_report.md"
 
         with open(
-
             report_path,
-
             "w",
-
             encoding="utf-8",
-
         ) as file:
 
             file.write(markdown)

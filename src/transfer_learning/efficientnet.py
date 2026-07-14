@@ -6,7 +6,7 @@ EfficientNetB0 Transfer Learning Model.
 Author: Argha Sarkar Project
 """
 
-from tensorflow.keras.applications import EfficientNetB0
+from keras.applications import EfficientNetB0
 
 from src.transfer_learning.base_model import BaseTransferModel
 
@@ -44,15 +44,10 @@ class EfficientNetModel(BaseTransferModel):
     def get_backbone(self):
 
         backbone = EfficientNetB0(
-
             include_top=False,
-
             weights=self.weights,
-
             input_shape=self.input_shape,
-
             pooling=None,
-
         )
 
         return backbone
@@ -61,13 +56,9 @@ class EfficientNetModel(BaseTransferModel):
 if __name__ == "__main__":
 
     model_builder = EfficientNetModel(
-
         input_shape=(224, 224, 3),
-
         num_classes=24,
-
         trainable=False,
-
     )
 
     model = model_builder.build()

@@ -1,4 +1,5 @@
 import random
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -21,7 +22,7 @@ class DatasetPlots:
         plt.tight_layout()
 
         plt.show()
-        
+
     @staticmethod
     def show_random_images(images, labels, rows=3, cols=5):
 
@@ -29,19 +30,13 @@ class DatasetPlots:
 
         total = rows * cols
 
-        indices = random.sample(
-            range(len(images)),
-            total
-        )
+        indices = random.sample(range(len(images)), total)
 
         for position, index in enumerate(indices):
 
             plt.subplot(rows, cols, position + 1)
 
-            plt.imshow(
-                images[index],
-                cmap="gray"
-            )
+            plt.imshow(images[index], cmap="gray")
 
             plt.title(f"Label : {labels[index]}")
 
@@ -50,8 +45,7 @@ class DatasetPlots:
         plt.tight_layout()
 
         plt.show()
-        
-        
+
     @staticmethod
     def show_class_examples(images, labels):
 
@@ -65,10 +59,7 @@ class DatasetPlots:
 
             plt.subplot(5, 5, position + 1)
 
-            plt.imshow(
-                images[index],
-                cmap="gray"
-            )
+            plt.imshow(images[index], cmap="gray")
 
             plt.title(str(label))
 
@@ -77,8 +68,7 @@ class DatasetPlots:
         plt.tight_layout()
 
         plt.show()
-        
-    
+
     @staticmethod
     def pixel_histogram(images):
 
@@ -98,8 +88,7 @@ class DatasetPlots:
         plt.tight_layout()
 
         plt.show()
-        
-        
+
     @staticmethod
     def mean_image(images):
 
@@ -114,7 +103,7 @@ class DatasetPlots:
         plt.axis("off")
 
         plt.show()
-        
+
     @staticmethod
     def median_image(images):
 

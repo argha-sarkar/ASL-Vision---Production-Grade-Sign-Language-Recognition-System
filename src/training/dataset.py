@@ -11,9 +11,7 @@ class DatasetBuilder:
         shuffle=True,
     ):
 
-        dataset = tf.data.Dataset.from_tensor_slices(
-            (images, labels)
-        )
+        dataset = tf.data.Dataset.from_tensor_slices((images, labels))
 
         if shuffle:
 
@@ -24,8 +22,6 @@ class DatasetBuilder:
 
         dataset = dataset.batch(batch_size)
 
-        dataset = dataset.prefetch(
-            tf.data.AUTOTUNE
-        )
+        dataset = dataset.prefetch(tf.data.AUTOTUNE)
 
         return dataset

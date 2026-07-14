@@ -10,18 +10,10 @@ from abc import ABC, abstractmethod
 
 import tensorflow as tf
 from tensorflow.keras import Model
-from tensorflow.keras.layers import (
-    Dense,
-    Dropout,
-    GlobalAveragePooling2D,
-    BatchNormalization,
-)
+from tensorflow.keras.layers import (BatchNormalization, Dense, Dropout,
+                          GlobalAveragePooling2D, Input)
+from tensorflow.keras.optimizers import SGD, Adam, RMSprop
 from tensorflow.keras.regularizers import l2
-from tensorflow.keras.optimizers import (
-    Adam,
-    RMSprop,
-    SGD,
-)
 
 
 class BaseTransferModel(ABC):
@@ -86,14 +78,10 @@ class BaseTransferModel(ABC):
         x = Dense(
             self.dense_units,
             activation="relu",
-            kernel_regularizer=l2(
-                self.l2_weight
-            ),
+            kernel_regularizer=l2(self.l2_weight),
         )(x)
 
-        x = Dropout(
-            self.dropout_rate
-        )(x)
+        x = Dropout(self.dropout_rate)(x)
 
         outputs = Dense(
             self.num_classes,
@@ -108,13 +96,9 @@ class BaseTransferModel(ABC):
 
         backbone = self.get_backbone()
 
-        backbone = self.freeze_backbone(
-            backbone
-        )
+        backbone = self.freeze_backbone(backbone)
 
-        inputs = tf.keras.Input(
-            shape=self.input_shape
-        )
+        inputs = Input(shape=self.input_shape)
 
         x = backbone(
             inputs,
@@ -124,13 +108,9 @@ class BaseTransferModel(ABC):
         outputs = self.classifier(x)
 
         model = Model(
-
             inputs,
-
             outputs,
-
             name=self.__class__.__name__,
-
         )
 
         return model
@@ -141,15 +121,11 @@ class BaseTransferModel(ABC):
 
         if self.optimizer_name == "adam":
 
-            return Adam(
-                learning_rate=self.learning_rate
-            )
+            return Adam(learning_rate=self.learning_rate)
 
         elif self.optimizer_name == "rmsprop":
 
-            return RMSprop(
-                learning_rate=self.learning_rate
-            )
+            return RMSprop(learning_rate=self.learning_rate)
 
         elif self.optimizer_name == "sgd":
 
@@ -158,24 +134,18 @@ class BaseTransferModel(ABC):
                 momentum=0.9,
             )
 
-        raise ValueError(
-            f"Unsupported optimizer: {self.optimizer_name}"
-        )
+        raise ValueError(f"Unsupported optimizer: {self.optimizer_name}")
 
     # ---------------------------------------------------------
 
     def compile(self, model):
 
         model.compile(
-
             optimizer=self.get_optimizer(),
-
             loss="sparse_categorical_crossentropy",
-
             metrics=[
                 "accuracy",
             ],
-
         )
 
         return model
@@ -221,20 +191,14 @@ class BaseTransferModel(ABC):
         learning_rate=1e-5,
     ):
 
-        optimizer = Adam(
-            learning_rate=learning_rate
-        )
+        optimizer = Adam(learning_rate=learning_rate)
 
         model.compile(
-
             optimizer=optimizer,
-
             loss="sparse_categorical_crossentropy",
-
             metrics=[
                 "accuracy",
             ],
-
         )
 
         return model

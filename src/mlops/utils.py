@@ -6,15 +6,15 @@ Production MLflow Utility Functions
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
-from datetime import datetime
 import json
 import os
 import random
+from datetime import datetime
+from pathlib import Path
 
+import mlflow
 import numpy as np
 import tensorflow as tf
-import mlflow
 
 
 class MLflowUtils:
@@ -32,11 +32,8 @@ class MLflowUtils:
         directory = Path(directory)
 
         directory.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
         return directory
@@ -46,11 +43,7 @@ class MLflowUtils:
     @staticmethod
     def current_timestamp():
 
-        return datetime.now().strftime(
-
-            "%Y-%m-%d %H:%M:%S"
-
-        )
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # ---------------------------------------------------------
 
@@ -63,31 +56,20 @@ class MLflowUtils:
         filepath = Path(filepath)
 
         filepath.parent.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
         with open(
-
             filepath,
-
             "w",
-
             encoding="utf-8",
-
         ) as file:
 
             json.dump(
-
                 data,
-
                 file,
-
                 indent=4,
-
             )
 
     # ---------------------------------------------------------
@@ -104,13 +86,9 @@ class MLflowUtils:
             return None
 
         with open(
-
             filepath,
-
             "r",
-
             encoding="utf-8",
-
         ) as file:
 
             return json.load(file)
@@ -128,9 +106,7 @@ class MLflowUtils:
 
         tf.random.set_seed(seed)
 
-        os.environ[
-            "PYTHONHASHSEED"
-        ] = str(seed)
+        os.environ["PYTHONHASHSEED"] = str(seed)
 
     # ---------------------------------------------------------
 
@@ -138,27 +114,18 @@ class MLflowUtils:
     def log_environment():
 
         mlflow.log_param(
-
             "python_version",
-
             os.sys.version,
-
         )
 
         mlflow.log_param(
-
             "tensorflow_version",
-
             tf.__version__,
-
         )
 
         mlflow.log_param(
-
             "numpy_version",
-
             np.__version__,
-
         )
 
     # ---------------------------------------------------------
@@ -166,24 +133,16 @@ class MLflowUtils:
     @staticmethod
     def log_gpu_information():
 
-        gpus = tf.config.list_physical_devices(
-            "GPU"
-        )
+        gpus = tf.config.list_physical_devices("GPU")
 
         mlflow.log_param(
-
             "gpu_available",
-
             len(gpus) > 0,
-
         )
 
         mlflow.log_param(
-
             "gpu_count",
-
             len(gpus),
-
         )
 
     # ---------------------------------------------------------
@@ -194,27 +153,18 @@ class MLflowUtils:
         import platform
 
         mlflow.log_param(
-
             "platform",
-
             platform.platform(),
-
         )
 
         mlflow.log_param(
-
             "processor",
-
             platform.processor(),
-
         )
 
         mlflow.log_param(
-
             "machine",
-
             platform.machine(),
-
         )
 
     # ---------------------------------------------------------
@@ -227,11 +177,8 @@ class MLflowUtils:
         for key, value in config.items():
 
             mlflow.log_param(
-
                 key,
-
                 value,
-
             )
 
     # ---------------------------------------------------------
@@ -245,30 +192,17 @@ class MLflowUtils:
         filepath = Path(filepath)
 
         filepath.parent.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
         with open(
-
             filepath,
-
             "w",
-
             encoding="utf-8",
-
         ) as file:
 
-            model.summary(
-
-                print_fn=lambda x: file.write(
-                    x + "\n"
-                )
-
-            )
+            model.summary(print_fn=lambda x: file.write(x + "\n"))
 
     # ---------------------------------------------------------
 
@@ -277,25 +211,14 @@ class MLflowUtils:
         model,
     ):
 
-        summary_path = Path(
-
-            "reports/mlflow/model_summary.txt"
-
-        )
+        summary_path = Path("reports/mlflow/model_summary.txt")
 
         MLflowUtils.save_model_summary(
-
             model,
-
             summary_path,
-
         )
 
-        mlflow.log_artifact(
-
-            str(summary_path)
-
-        )
+        mlflow.log_artifact(str(summary_path))
 
     # ---------------------------------------------------------
 
@@ -304,11 +227,7 @@ class MLflowUtils:
         experiment_name,
     ):
 
-        experiment = mlflow.get_experiment_by_name(
-
-            experiment_name
-
-        )
+        experiment = mlflow.get_experiment_by_name(experiment_name)
 
         return experiment is not None
 
@@ -338,9 +257,7 @@ class MLflowUtils:
 
         print("=" * 70)
 
-        print(
-            f"Started : {MLflowUtils.current_timestamp()}"
-        )
+        print(f"Started : {MLflowUtils.current_timestamp()}")
 
         print("=" * 70)
 
@@ -351,8 +268,4 @@ if __name__ == "__main__":
 
     MLflowUtils.set_random_seed()
 
-    print(
-
-        MLflowUtils.current_timestamp()
-
-    )
+    print(MLflowUtils.current_timestamp())

@@ -14,9 +14,7 @@ class MisclassifiedAnalyzer:
 
     def __init__(self):
 
-        self.output_dir = Path(
-            "reports/explainability"
-        )
+        self.output_dir = Path("reports/explainability")
 
         self.output_dir.mkdir(
             parents=True,
@@ -31,9 +29,7 @@ class MisclassifiedAnalyzer:
         probabilities,
     ):
 
-        incorrect = np.where(
-            y_true != y_pred
-        )[0]
+        incorrect = np.where(y_true != y_pred)[0]
 
         return (
             images[incorrect],
@@ -57,15 +53,10 @@ class MisclassifiedAnalyzer:
             wrong_pred,
             wrong_prob,
         ) = self.get_misclassified(
-
             images,
-
             y_true,
-
             y_pred,
-
             probabilities,
-
         )
 
         total = min(
@@ -75,9 +66,7 @@ class MisclassifiedAnalyzer:
 
         if total == 0:
 
-            print(
-                "No misclassified images found."
-            )
+            print("No misclassified images found.")
 
             return
 
@@ -99,31 +88,17 @@ class MisclassifiedAnalyzer:
                 cmap="gray",
             )
 
-            confidence = np.max(
-                wrong_prob[i]
-            )
+            confidence = np.max(wrong_prob[i])
 
             plt.title(
-
-                f"T:{wrong_true[i]}\n"
-
-                f"P:{wrong_pred[i]}\n"
-
-                f"C:{confidence:.2f}"
-
+                f"T:{wrong_true[i]}\n" f"P:{wrong_pred[i]}\n" f"C:{confidence:.2f}"
             )
 
             plt.axis("off")
 
         plt.tight_layout()
 
-        save_path = (
-
-            self.output_dir
-
-            / "misclassified_images.png"
-
-        )
+        save_path = self.output_dir / "misclassified_images.png"
 
         plt.savefig(
             save_path,

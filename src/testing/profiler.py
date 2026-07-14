@@ -6,9 +6,9 @@ Production Model Profiler
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
 import time
 import tracemalloc
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -41,32 +41,19 @@ class ModelProfiler:
 
         if not self.model_path.exists():
 
-            raise FileNotFoundError(
+            raise FileNotFoundError(f"{self.model_path} not found.")
 
-                f"{self.model_path} not found."
-
-            )
-
-        return tf.keras.models.load_model(
-
-            self.model_path
-
-        )
+        return tf.keras.models.load_model(self.model_path)
 
     # ---------------------------------------------------------
 
     def sample(self):
 
         return np.random.rand(
-
             1,
-
             self.input_shape[0],
-
             self.input_shape[1],
-
             self.input_shape[2],
-
         ).astype(np.float32)
 
     # ---------------------------------------------------------
@@ -78,11 +65,8 @@ class ModelProfiler:
         for _ in range(10):
 
             self.model.predict(
-
                 image,
-
                 verbose=0,
-
             )
 
     # ---------------------------------------------------------
@@ -98,39 +82,19 @@ class ModelProfiler:
             start = time.perf_counter()
 
             self.model.predict(
-
                 image,
-
                 verbose=0,
-
             )
 
             end = time.perf_counter()
 
-            execution.append(
-
-                end - start
-
-            )
+            execution.append(end - start)
 
         return {
-
-            "average_ms":
-
-                np.mean(execution) * 1000,
-
-            "minimum_ms":
-
-                np.min(execution) * 1000,
-
-            "maximum_ms":
-
-                np.max(execution) * 1000,
-
-            "std_ms":
-
-                np.std(execution) * 1000,
-
+            "average_ms": np.mean(execution) * 1000,
+            "minimum_ms": np.min(execution) * 1000,
+            "maximum_ms": np.max(execution) * 1000,
+            "std_ms": np.std(execution) * 1000,
         }
 
     # ---------------------------------------------------------
@@ -142,11 +106,8 @@ class ModelProfiler:
         tracemalloc.start()
 
         self.model.predict(
-
             image,
-
             verbose=0,
-
         )
 
         current, peak = tracemalloc.get_traced_memory()
@@ -154,41 +115,20 @@ class ModelProfiler:
         tracemalloc.stop()
 
         return {
-
-            "current_mb":
-
-                current / 1024 / 1024,
-
-            "peak_mb":
-
-                peak / 1024 / 1024,
-
+            "current_mb": current / 1024 / 1024,
+            "peak_mb": peak / 1024 / 1024,
         }
 
     # ---------------------------------------------------------
 
     def gpu_information(self):
 
-        gpus = tf.config.list_physical_devices(
-
-            "GPU"
-
-        )
+        gpus = tf.config.list_physical_devices("GPU")
 
         return {
-
-            "gpu_available":
-
-                len(gpus) > 0,
-
-            "gpu_count":
-
-                len(gpus),
-
-            "devices":
-
-                [gpu.name for gpu in gpus],
-
+            "gpu_available": len(gpus) > 0,
+            "gpu_count": len(gpus),
+            "devices": [gpu.name for gpu in gpus],
         }
 
     # ---------------------------------------------------------
@@ -196,51 +136,23 @@ class ModelProfiler:
     def model_information(self):
 
         trainable = np.sum(
-
             [
-
-                tf.keras.backend.count_params(
-
-                    variable
-
-                )
-
+                tf.keras.backend.count_params(variable)
                 for variable in self.model.trainable_weights
-
             ]
-
         )
 
         non_trainable = np.sum(
-
             [
-
-                tf.keras.backend.count_params(
-
-                    variable
-
-                )
-
+                tf.keras.backend.count_params(variable)
                 for variable in self.model.non_trainable_weights
-
             ]
-
         )
 
         return {
-
-            "total_parameters":
-
-                self.model.count_params(),
-
-            "trainable_parameters":
-
-                int(trainable),
-
-            "non_trainable_parameters":
-
-                int(non_trainable),
-
+            "total_parameters": self.model.count_params(),
+            "trainable_parameters": int(trainable),
+            "non_trainable_parameters": int(non_trainable),
         }
 
     # ---------------------------------------------------------
@@ -248,19 +160,9 @@ class ModelProfiler:
     def tensorflow_information(self):
 
         return {
-
-            "tensorflow":
-
-                tf.__version__,
-
-            "eager_execution":
-
-                tf.executing_eagerly(),
-
-            "built_with_cuda":
-
-                tf.test.is_built_with_cuda(),
-
+            "tensorflow": tf.__version__,
+            "eager_execution": tf.executing_eagerly(),
+            "built_with_cuda": tf.test.is_built_with_cuda(),
         }
 
     # ---------------------------------------------------------
@@ -271,80 +173,45 @@ class ModelProfiler:
 
         profile = {}
 
-        profile.update(
+        profile.update(self.cpu_profile())
 
-            self.cpu_profile()
+        profile.update(self.memory_profile())
 
-        )
+        profile.update(self.model_information())
 
-        profile.update(
+        profile.update(self.gpu_information())
 
-            self.memory_profile()
-
-        )
-
-        profile.update(
-
-            self.model_information()
-
-        )
-
-        profile.update(
-
-            self.gpu_information()
-
-        )
-
-        profile.update(
-
-            self.tensorflow_information()
-
-        )
+        profile.update(self.tensorflow_information())
 
         return profile
 
     # ---------------------------------------------------------
 
     def save(
-
         self,
-
         output="reports/testing/profile.csv",
-
     ):
 
         output = Path(output)
 
         output.parent.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
         profile = self.full_profile()
 
         dataframe = pd.DataFrame(
-
             profile.items(),
-
             columns=[
-
                 "Metric",
-
                 "Value",
-
             ],
-
         )
 
         dataframe.to_csv(
-
             output,
-
             index=False,
-
         )
 
         return output
@@ -365,11 +232,7 @@ class ModelProfiler:
 
         for key, value in profile.items():
 
-            print(
-
-                f"{key:<30}: {value}"
-
-            )
+            print(f"{key:<30}: {value}")
 
         print("=" * 70)
 

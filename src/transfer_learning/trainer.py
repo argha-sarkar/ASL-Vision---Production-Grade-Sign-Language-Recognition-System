@@ -57,17 +57,11 @@ class TransferLearningTrainer:
         print("=" * 70)
 
         self.history = self.model.fit(
-
             self.train_dataset,
-
             validation_data=self.validation_dataset,
-
             epochs=self.epochs,
-
             callbacks=self.callbacks,
-
             verbose=1,
-
         )
 
         return self.history
@@ -93,31 +87,19 @@ class TransferLearningTrainer:
             layer.trainable = False
 
         self.model.compile(
-
-            optimizer=tf.keras.optimizers.Adam(
-                learning_rate=learning_rate
-            ),
-
+            optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
             loss="sparse_categorical_crossentropy",
-
             metrics=[
                 "accuracy",
             ],
-
         )
 
         history = self.model.fit(
-
             self.train_dataset,
-
             validation_data=self.validation_dataset,
-
             epochs=epochs,
-
             callbacks=self.callbacks,
-
             verbose=1,
-
         )
 
         return history
@@ -126,10 +108,7 @@ class TransferLearningTrainer:
 
     def save_model(self):
 
-        save_path = (
-            self.model_dir /
-            f"{self.model_name}.keras"
-        )
+        save_path = self.model_dir / f"{self.model_name}.keras"
 
         self.model.save(save_path)
 
@@ -148,16 +127,11 @@ class TransferLearningTrainer:
         model_path = self.save_model()
 
         return {
-
             "history": history,
-
             "model_path": model_path,
-
         }
 
 
 if __name__ == "__main__":
 
-    print(
-        "TransferLearningTrainer module loaded successfully."
-    )
+    print("TransferLearningTrainer module loaded successfully.")

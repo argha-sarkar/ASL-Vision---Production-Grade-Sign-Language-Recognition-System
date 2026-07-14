@@ -25,9 +25,7 @@ class FeatureMapVisualizer:
 
         self.model = model
 
-        self.output_dir = Path(
-            "reports/explainability/feature_maps"
-        )
+        self.output_dir = Path("reports/explainability/feature_maps")
 
         self.output_dir.mkdir(
             parents=True,
@@ -61,11 +59,8 @@ class FeatureMapVisualizer:
         outputs, names = self._get_conv_layers()
 
         activation_model = tf.keras.Model(
-
             inputs=self.model.input,
-
             outputs=outputs,
-
         )
 
         return activation_model, names
@@ -93,9 +88,7 @@ class FeatureMapVisualizer:
                 axis=0,
             )
 
-        activation_model, layer_names = (
-            self._activation_model()
-        )
+        activation_model, layer_names = self._activation_model()
 
         feature_maps = activation_model.predict(
             image,
@@ -118,18 +111,12 @@ class FeatureMapVisualizer:
 
             cols = 4
 
-            rows = int(
-                np.ceil(filters / cols)
-            )
+            rows = int(np.ceil(filters / cols))
 
             fig, axes = plt.subplots(
-
                 rows,
-
                 cols,
-
                 figsize=(10, 8),
-
             )
 
             axes = np.array(axes).reshape(-1)
@@ -137,11 +124,8 @@ class FeatureMapVisualizer:
             for i in range(filters):
 
                 axes[i].imshow(
-
                     feature_map[0, :, :, i],
-
                     cmap="viridis",
-
                 )
 
                 axes[i].set_title(
@@ -162,10 +146,7 @@ class FeatureMapVisualizer:
 
             plt.tight_layout()
 
-            save_path = (
-                self.output_dir
-                / f"{layer_name}.png"
-            )
+            save_path = self.output_dir / f"{layer_name}.png"
 
             plt.savefig(
                 save_path,

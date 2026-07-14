@@ -17,20 +17,17 @@ Author:
 Argha Sarkar Project
 """
 
-from pathlib import Path
-from datetime import datetime
 import json
-
-import optuna
-from optuna.visualization.matplotlib import (
-    plot_optimization_history,
-    plot_param_importances,
-    plot_parallel_coordinate,
-    plot_slice,
-    plot_contour,
-)
+from datetime import datetime
+from pathlib import Path
 
 import matplotlib.pyplot as plt
+import optuna
+from optuna.visualization.matplotlib import (plot_contour,
+                                             plot_optimization_history,
+                                             plot_parallel_coordinate,
+                                             plot_param_importances,
+                                             plot_slice)
 
 
 class OptimizationReport:
@@ -40,9 +37,7 @@ class OptimizationReport:
 
     def __init__(self):
 
-        self.output_dir = Path(
-            "reports/optimization"
-        )
+        self.output_dir = Path("reports/optimization")
 
         self.output_dir.mkdir(
             parents=True,
@@ -58,19 +53,12 @@ class OptimizationReport:
         study,
     ):
 
-        save_path = (
-            self.output_dir /
-            "best_parameters.json"
-        )
+        save_path = self.output_dir / "best_parameters.json"
 
         data = {
-
             "best_trial": study.best_trial.number,
-
             "best_score": study.best_value,
-
             "parameters": study.best_params,
-
         }
 
         with open(
@@ -99,14 +87,9 @@ class OptimizationReport:
         plt.tight_layout()
 
         plt.savefig(
-
-            self.output_dir /
-            "optimization_history.png",
-
+            self.output_dir / "optimization_history.png",
             dpi=300,
-
             bbox_inches="tight",
-
         )
 
         plt.close()
@@ -125,14 +108,9 @@ class OptimizationReport:
         plt.tight_layout()
 
         plt.savefig(
-
-            self.output_dir /
-            "parameter_importance.png",
-
+            self.output_dir / "parameter_importance.png",
             dpi=300,
-
             bbox_inches="tight",
-
         )
 
         plt.close()
@@ -151,14 +129,9 @@ class OptimizationReport:
         plt.tight_layout()
 
         plt.savefig(
-
-            self.output_dir /
-            "parallel_coordinate.png",
-
+            self.output_dir / "parallel_coordinate.png",
             dpi=300,
-
             bbox_inches="tight",
-
         )
 
         plt.close()
@@ -177,14 +150,9 @@ class OptimizationReport:
         plt.tight_layout()
 
         plt.savefig(
-
-            self.output_dir /
-            "slice_plot.png",
-
+            self.output_dir / "slice_plot.png",
             dpi=300,
-
             bbox_inches="tight",
-
         )
 
         plt.close()
@@ -205,23 +173,16 @@ class OptimizationReport:
             plt.tight_layout()
 
             plt.savefig(
-
-                self.output_dir /
-                "contour_plot.png",
-
+                self.output_dir / "contour_plot.png",
                 dpi=300,
-
                 bbox_inches="tight",
-
             )
 
             plt.close()
 
         except Exception:
 
-            print(
-                "Contour plot requires at least two optimized parameters."
-            )
+            print("Contour plot requires at least two optimized parameters.")
 
     # ---------------------------------------------------------
     # Markdown Report
@@ -232,10 +193,7 @@ class OptimizationReport:
         study,
     ):
 
-        report_path = (
-            self.output_dir /
-            "optimization_report.md"
-        )
+        report_path = self.output_dir / "optimization_report.md"
 
         markdown = f"""# Hyperparameter Optimization Report
 

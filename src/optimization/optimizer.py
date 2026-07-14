@@ -15,8 +15,8 @@ Author:
 Argha Sarkar Project
 """
 
-from pathlib import Path
 import json
+from pathlib import Path
 
 import optuna
 
@@ -55,9 +55,7 @@ class HyperparameterOptimizer:
         self.study_name = study_name
         self.storage = storage
 
-        self.output_dir = Path(
-            "reports/optimization"
-        )
+        self.output_dir = Path("reports/optimization")
 
         self.output_dir.mkdir(
             parents=True,
@@ -70,15 +68,10 @@ class HyperparameterOptimizer:
         """
 
         study = optuna.create_study(
-
             study_name=self.study_name,
-
             direction=self.direction,
-
             storage=self.storage,
-
             load_if_exists=True,
-
         )
 
         return study
@@ -91,17 +84,11 @@ class HyperparameterOptimizer:
         study = self.create_study()
 
         objective = Objective(
-
             train_dataset=self.train_dataset,
-
             validation_dataset=self.validation_dataset,
-
             input_shape=self.input_shape,
-
             num_classes=self.num_classes,
-
             epochs=self.epochs,
-
         )
 
         print("\n" + "=" * 70)
@@ -109,25 +96,21 @@ class HyperparameterOptimizer:
         print("=" * 70)
 
         study.optimize(
-
             objective,
-
             n_trials=self.n_trials,
-
             show_progress_bar=True,
-
         )
 
         report = OptimizationReport()
 
         report.generate(study)
-        
+
         self.save_best_parameters(study)
 
         self.save_trials(study)
 
         self.print_summary(study)
-        
+
         self.save_trials(study)
 
         self.print_summary(study)
@@ -142,19 +125,12 @@ class HyperparameterOptimizer:
         Save best hyperparameters.
         """
 
-        save_path = (
-            self.output_dir /
-            "best_parameters.json"
-        )
+        save_path = self.output_dir / "best_parameters.json"
 
         result = {
-
             "best_score": study.best_value,
-
             "best_trial": study.best_trial.number,
-
             "parameters": study.best_params,
-
         }
 
         with open(
@@ -164,13 +140,9 @@ class HyperparameterOptimizer:
         ) as file:
 
             json.dump(
-
                 result,
-
                 file,
-
                 indent=4,
-
             )
 
     def save_trials(
@@ -183,17 +155,11 @@ class HyperparameterOptimizer:
 
         dataframe = study.trials_dataframe()
 
-        csv_path = (
-            self.output_dir /
-            "trials.csv"
-        )
+        csv_path = self.output_dir / "trials.csv"
 
         dataframe.to_csv(
-
             csv_path,
-
             index=False,
-
         )
 
     def print_summary(
@@ -209,13 +175,9 @@ class HyperparameterOptimizer:
 
         print()
 
-        print(
-            f"Best Trial : {study.best_trial.number}"
-        )
+        print(f"Best Trial : {study.best_trial.number}")
 
-        print(
-            f"Best Score : {study.best_value:.5f}"
-        )
+        print(f"Best Score : {study.best_value:.5f}")
 
         print()
 
@@ -225,12 +187,8 @@ class HyperparameterOptimizer:
 
         for key, value in study.best_params.items():
 
-            print(
-                f"{key:<20}: {value}"
-            )
+            print(f"{key:<20}: {value}")
 
         print()
 
-        print(
-            f"Reports Saved : {self.output_dir}"
-        )
+        print(f"Reports Saved : {self.output_dir}")

@@ -7,8 +7,7 @@ Generate and save confusion matrix.
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-from sklearn.metrics import ConfusionMatrixDisplay
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 
 
 class ConfusionMatrixGenerator:
@@ -30,9 +29,7 @@ class ConfusionMatrixGenerator:
             y_pred,
         )
 
-        fig, ax = plt.subplots(
-            figsize=(12, 12)
-        )
+        fig, ax = plt.subplots(figsize=(12, 12))
 
         display = ConfusionMatrixDisplay(
             confusion_matrix=cm,

@@ -22,28 +22,18 @@ class ModelCompiler:
 
     def compile(self, model):
 
-        optimizer = tf.keras.optimizers.Adam(
-            learning_rate=self.learning_rate
-        )
+        optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
 
         loss = tf.keras.losses.SparseCategoricalCrossentropy()
 
         metrics = [
-
-            tf.keras.metrics.SparseCategoricalAccuracy(
-                name="accuracy"
-            ),
-
+            tf.keras.metrics.SparseCategoricalAccuracy(name="accuracy"),
         ]
 
         model.compile(
-
             optimizer=optimizer,
-
             loss=loss,
-
             metrics=metrics,
-
         )
 
         return model

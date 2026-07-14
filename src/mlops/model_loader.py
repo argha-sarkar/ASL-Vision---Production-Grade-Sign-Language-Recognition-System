@@ -23,13 +23,9 @@ class ModelLoader:
         tracking_uri="mlruns",
     ):
 
-        mlflow.set_tracking_uri(
-            tracking_uri
-        )
+        mlflow.set_tracking_uri(tracking_uri)
 
-        self.client = MlflowClient(
-            tracking_uri=tracking_uri
-        )
+        self.client = MlflowClient(tracking_uri=tracking_uri)
 
     # ---------------------------------------------------------
 
@@ -38,9 +34,7 @@ class ModelLoader:
         model_uri,
     ):
 
-        return mlflow.tensorflow.load_model(
-            model_uri
-        )
+        return mlflow.tensorflow.load_model(model_uri)
 
     # ---------------------------------------------------------
 
@@ -50,13 +44,9 @@ class ModelLoader:
         stage="Production",
     ):
 
-        model_uri = (
-            f"models:/{model_name}/{stage}"
-        )
+        model_uri = f"models:/{model_name}/{stage}"
 
-        return self.load_model(
-            model_uri
-        )
+        return self.load_model(model_uri)
 
     # ---------------------------------------------------------
 
@@ -66,13 +56,9 @@ class ModelLoader:
         version,
     ):
 
-        model_uri = (
-            f"models:/{model_name}/{version}"
-        )
+        model_uri = f"models:/{model_name}/{version}"
 
-        return self.load_model(
-            model_uri
-        )
+        return self.load_model(model_uri)
 
     # ---------------------------------------------------------
 
@@ -81,9 +67,7 @@ class ModelLoader:
         model_name,
     ):
 
-        versions = self.client.get_latest_versions(
-            model_name
-        )
+        versions = self.client.get_latest_versions(model_name)
 
         if len(versions) == 0:
 
@@ -98,20 +82,15 @@ class ModelLoader:
         model_name,
     ):
 
-        version = self.latest_version(
-            model_name
-        )
+        version = self.latest_version(model_name)
 
         if version is None:
 
             return None
 
         return self.load_model_version(
-
             model_name,
-
             version.version,
-
         )
 
     # ---------------------------------------------------------
@@ -122,26 +101,17 @@ class ModelLoader:
         destination="downloads",
     ):
 
-        destination = Path(
-            destination
-        )
+        destination = Path(destination)
 
         destination.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
         return self.client.download_artifacts(
-
             run_id,
-
             "",
-
             str(destination),
-
         )
 
     # ---------------------------------------------------------
@@ -159,11 +129,7 @@ class ModelLoader:
         model_name,
     ):
 
-        return self.client.search_model_versions(
-
-            f"name='{model_name}'"
-
-        )
+        return self.client.search_model_versions(f"name='{model_name}'")
 
     # ---------------------------------------------------------
 
@@ -174,9 +140,7 @@ class ModelLoader:
 
         try:
 
-            self.client.get_registered_model(
-                model_name
-            )
+            self.client.get_registered_model(model_name)
 
             return True
 
@@ -204,13 +168,9 @@ class ModelLoader:
 
         for model in models:
 
-            print(
-                f"Name : {model.name}"
-            )
+            print(f"Name : {model.name}")
 
-            print(
-                f"Description : {model.description}"
-            )
+            print(f"Description : {model.description}")
 
             print("-" * 70)
 
@@ -221,9 +181,7 @@ class ModelLoader:
         model_name,
     ):
 
-        versions = self.list_versions(
-            model_name
-        )
+        versions = self.list_versions(model_name)
 
         print("\n" + "=" * 70)
         print(model_name)
@@ -231,17 +189,11 @@ class ModelLoader:
 
         for version in versions:
 
-            print(
-                f"Version : {version.version}"
-            )
+            print(f"Version : {version.version}")
 
-            print(
-                f"Stage   : {version.current_stage}"
-            )
+            print(f"Stage   : {version.current_stage}")
 
-            print(
-                f"Run ID  : {version.run_id}"
-            )
+            print(f"Run ID  : {version.run_id}")
 
             print("-" * 70)
 

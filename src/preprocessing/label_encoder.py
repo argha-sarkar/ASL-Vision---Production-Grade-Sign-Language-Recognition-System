@@ -15,13 +15,8 @@ class LabelEncoder:
 
         unique_labels = sorted(np.unique(labels))
 
-        label_mapping = {
-            old: new
-            for new, old in enumerate(unique_labels)
-        }
+        label_mapping = {old: new for new, old in enumerate(unique_labels)}
 
-        encoded = np.array(
-            [label_mapping[label] for label in labels]
-        )
+        encoded = np.array([label_mapping[label] for label in labels])
 
         return encoded, label_mapping

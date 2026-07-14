@@ -5,10 +5,7 @@ Evaluation plots.
 """
 
 import matplotlib.pyplot as plt
-
-from sklearn.metrics import ConfusionMatrixDisplay
-
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 
 
 class EvaluationPlots:
@@ -17,34 +14,20 @@ class EvaluationPlots:
     def confusion(y_true, y_pred):
 
         cm = confusion_matrix(
-
             y_true,
-
             y_pred,
-
         )
 
-        display = ConfusionMatrixDisplay(
+        display = ConfusionMatrixDisplay(confusion_matrix=cm)
 
-            confusion_matrix=cm
-
-        )
-
-        plt.figure(figsize=(10,10))
+        plt.figure(figsize=(10, 10))
 
         display.plot(
-
             cmap="Blues",
-
             values_format="d",
-
         )
 
-        plt.title(
-
-            "Confusion Matrix"
-
-        )
+        plt.title("Confusion Matrix")
 
         plt.tight_layout()
 

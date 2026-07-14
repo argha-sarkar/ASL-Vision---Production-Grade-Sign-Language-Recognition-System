@@ -6,8 +6,8 @@ FastAPI Prediction Engine
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
 import pickle
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -31,27 +31,19 @@ class APIPredictor:
 
     def _load_model(self):
 
-        model_path = Path(
-            settings.MODEL_PATH
-        )
+        model_path = Path(settings.MODEL_PATH)
 
         if not model_path.exists():
 
-            raise FileNotFoundError(
-                f"Model not found: {model_path}"
-            )
+            raise FileNotFoundError(f"Model not found: {model_path}")
 
-        return tf.keras.models.load_model(
-            model_path
-        )
+        return tf.keras.models.load_model(str(model_path))
 
     # ---------------------------------------------------------
 
     def _load_labels(self):
 
-        label_path = Path(
-            settings.LABELS_PATH
-        )
+        label_path = Path(settings.LABELS_PATH)
 
         if not label_path.exists():
 
@@ -83,9 +75,7 @@ class APIPredictor:
                 cv2.COLOR_BGR2GRAY,
             )
 
-        image = image.astype(
-            "float32"
-        )
+        image = image.astype("float32")
 
         image /= 255.0
 
@@ -108,34 +98,22 @@ class APIPredictor:
         image: np.ndarray,
     ):
 
-        image = self.preprocess(
-            image
-        )
+        image = self.preprocess(image)
 
         probabilities = self.model.predict(
             image,
             verbose=0,
         )[0]
 
-        prediction = int(
-            np.argmax(
-                probabilities
-            )
-        )
+        prediction = int(np.argmax(probabilities))
 
-        confidence = float(
-            probabilities[
-                prediction
-            ]
-        )
+        confidence = float(probabilities[prediction])
 
         if self.labels is not None:
 
             try:
 
-                label = self.labels.inverse_transform(
-                    [prediction]
-                )[0]
+                label = self.labels.inverse_transform([prediction])[0]
 
             except Exception:
 
@@ -146,15 +124,10 @@ class APIPredictor:
             label = str(prediction)
 
         return {
-
             "prediction": label,
-
             "class_index": prediction,
-
             "confidence": confidence,
-
             "probabilities": probabilities.tolist(),
-
         }
 
     # ---------------------------------------------------------
@@ -164,19 +137,13 @@ class APIPredictor:
         image_path,
     ):
 
-        image = cv2.imread(
-            str(image_path)
-        )
+        image = cv2.imread(str(image_path))
 
         if image is None:
 
-            raise ValueError(
-                "Unable to read image."
-            )
+            raise ValueError("Unable to read image.")
 
-        return self.predict(
-            image
-        )
+        return self.predict(image)
 
     # ---------------------------------------------------------
 
@@ -185,45 +152,29 @@ class APIPredictor:
         folder_path,
     ):
 
-        folder = Path(
-            folder_path
-        )
+        folder = Path(folder_path)
 
         if not folder.exists():
 
-            raise FileNotFoundError(
-                folder
-            )
+            raise FileNotFoundError(folder)
 
         results = []
 
-        for image_path in sorted(
-            folder.iterdir()
-        ):
+        for image_path in sorted(folder.iterdir()):
 
             if image_path.suffix.lower() not in [
-
                 ".jpg",
-
                 ".jpeg",
-
                 ".png",
-
             ]:
 
                 continue
 
-            prediction = self.predict_file(
-                image_path
-            )
+            prediction = self.predict_file(image_path)
 
-            prediction[
-                "filename"
-            ] = image_path.name
+            prediction["filename"] = image_path.name
 
-            results.append(
-                prediction
-            )
+            results.append(prediction)
 
         return results
 
@@ -232,14 +183,7 @@ class APIPredictor:
     def health(self):
 
         return {
-
             "model_loaded": self.model is not None,
-
             "num_classes": self.model.output_shape[-1],
-
             "input_shape": self.model.input_shape,
-
         }
-
-
-predictor = APIPredictor()

@@ -36,17 +36,11 @@ class Predictor:
 
         if not self.model_path.exists():
 
-            raise FileNotFoundError(
-
-                f"Model not found:\n{self.model_path}"
-
-            )
+            raise FileNotFoundError(f"Model not found:\n{self.model_path}")
 
         print("\nLoading trained model...")
 
-        self.model = tf.keras.models.load_model(
-            self.model_path
-        )
+        self.model = tf.keras.models.load_model(self.model_path)
 
         print("Model loaded successfully.\n")
 
@@ -68,31 +62,18 @@ class Predictor:
 
         if not isinstance(images, np.ndarray):
 
-            raise TypeError(
-
-                "Input must be a NumPy array."
-
-            )
+            raise TypeError("Input must be a NumPy array.")
 
         if images.ndim == 3:
 
             images = np.expand_dims(
-
                 images,
-
                 axis=0,
-
             )
 
         if images.ndim != 4:
 
-            raise ValueError(
-
-                f"Expected 4 dimensions.\n"
-
-                f"Received {images.shape}"
-
-            )
+            raise ValueError(f"Expected 4 dimensions.\n" f"Received {images.shape}")
 
         return images
 
@@ -111,24 +92,16 @@ class Predictor:
         probabilities
         """
 
-        images = self._validate_input(
-            images
-        )
+        images = self._validate_input(images)
 
         probabilities = self.model.predict(
-
             images,
-
             verbose=0,
-
         )
 
         predictions = np.argmax(
-
             probabilities,
-
             axis=1,
-
         )
 
         return predictions, probabilities
@@ -142,11 +115,8 @@ class Predictor:
         """
 
         return np.max(
-
             probabilities,
-
             axis=1,
-
         )
 
     def top_k(
@@ -159,21 +129,14 @@ class Predictor:
         """
 
         top_indices = np.argsort(
-
             probabilities,
-
             axis=1,
-
         )[:, -k:]
 
         top_scores = np.take_along_axis(
-
             probabilities,
-
             top_indices,
-
             axis=1,
-
         )
 
         return top_indices, top_scores
@@ -183,24 +146,12 @@ class Predictor:
         image: np.ndarray,
     ):
 
-        predictions, probabilities = self.predict(
-            image
-        )
+        predictions, probabilities = self.predict(image)
 
-        confidence = self.confidence(
-            probabilities
-        )[0]
+        confidence = self.confidence(probabilities)[0]
 
         return {
-
-            "prediction": int(
-                predictions[0]
-            ),
-
-            "confidence": float(
-                confidence
-            ),
-
+            "prediction": int(predictions[0]),
+            "confidence": float(confidence),
             "probabilities": probabilities[0],
-
         }

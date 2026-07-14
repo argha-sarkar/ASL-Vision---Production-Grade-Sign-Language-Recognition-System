@@ -14,9 +14,7 @@ class ConfidenceAnalyzer:
 
     def __init__(self):
 
-        self.output_dir = Path(
-            "reports/explainability"
-        )
+        self.output_dir = Path("reports/explainability")
 
         self.output_dir.mkdir(
             parents=True,
@@ -38,9 +36,7 @@ class ConfidenceAnalyzer:
         probabilities,
     ):
 
-        confidence = self.confidence_scores(
-            probabilities
-        )
+        confidence = self.confidence_scores(probabilities)
 
         plt.figure(figsize=(10, 5))
 
@@ -50,24 +46,15 @@ class ConfidenceAnalyzer:
             edgecolor="black",
         )
 
-        plt.title(
-            "Prediction Confidence Distribution"
-        )
+        plt.title("Prediction Confidence Distribution")
 
-        plt.xlabel(
-            "Confidence"
-        )
+        plt.xlabel("Confidence")
 
-        plt.ylabel(
-            "Number of Images"
-        )
+        plt.ylabel("Number of Images")
 
         plt.grid(True)
 
-        save_path = (
-            self.output_dir
-            / "confidence_distribution.png"
-        )
+        save_path = self.output_dir / "confidence_distribution.png"
 
         plt.savefig(
             save_path,
@@ -84,36 +71,13 @@ class ConfidenceAnalyzer:
         probabilities,
     ):
 
-        confidence = self.confidence_scores(
-            probabilities
-        )
+        confidence = self.confidence_scores(probabilities)
 
         return {
-
-            "Mean Confidence":
-
-                float(
-                    np.mean(confidence)
-                ),
-
-            "Minimum Confidence":
-
-                float(
-                    np.min(confidence)
-                ),
-
-            "Maximum Confidence":
-
-                float(
-                    np.max(confidence)
-                ),
-
-            "Median Confidence":
-
-                float(
-                    np.median(confidence)
-                ),
-
+            "Mean Confidence": float(np.mean(confidence)),
+            "Minimum Confidence": float(np.min(confidence)),
+            "Maximum Confidence": float(np.max(confidence)),
+            "Median Confidence": float(np.median(confidence)),
         }
 
     def low_confidence_indices(
@@ -122,10 +86,6 @@ class ConfidenceAnalyzer:
         threshold=0.70,
     ):
 
-        confidence = self.confidence_scores(
-            probabilities
-        )
+        confidence = self.confidence_scores(probabilities)
 
-        return np.where(
-            confidence < threshold
-        )[0]
+        return np.where(confidence < threshold)[0]

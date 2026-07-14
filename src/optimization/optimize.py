@@ -1,6 +1,6 @@
-from src.optimization.optimizer import HyperparameterOptimizer
 # 1. Import the DataLoader class
 from src.data.loader import DataLoader
+from src.optimization.optimizer import HyperparameterOptimizer
 
 # 2. Use the static methods to load the data into the expected variables
 train_dataset = DataLoader.load_train()

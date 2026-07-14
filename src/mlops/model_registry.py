@@ -22,13 +22,9 @@ class ModelRegistry:
         tracking_uri="mlruns",
     ):
 
-        mlflow.set_tracking_uri(
-            tracking_uri
-        )
+        mlflow.set_tracking_uri(tracking_uri)
 
-        self.client = MlflowClient(
-            tracking_uri=tracking_uri
-        )
+        self.client = MlflowClient(tracking_uri=tracking_uri)
 
     # ---------------------------------------------------------
 
@@ -39,11 +35,8 @@ class ModelRegistry:
     ):
 
         result = mlflow.register_model(
-
             model_uri=model_uri,
-
             name=model_name,
-
         )
 
         return result
@@ -57,15 +50,11 @@ class ModelRegistry:
 
         try:
 
-            return self.client.create_registered_model(
-                model_name
-            )
+            return self.client.create_registered_model(model_name)
 
         except Exception:
 
-            return self.client.get_registered_model(
-                model_name
-            )
+            return self.client.get_registered_model(model_name)
 
     # ---------------------------------------------------------
 
@@ -74,9 +63,7 @@ class ModelRegistry:
         model_name,
     ):
 
-        return self.client.get_registered_model(
-            model_name
-        )
+        return self.client.get_registered_model(model_name)
 
     # ---------------------------------------------------------
 
@@ -93,9 +80,7 @@ class ModelRegistry:
         model_name,
     ):
 
-        return self.client.get_latest_versions(
-            model_name
-        )
+        return self.client.get_latest_versions(model_name)
 
     # ---------------------------------------------------------
 
@@ -107,15 +92,10 @@ class ModelRegistry:
     ):
 
         self.client.transition_model_version_stage(
-
             name=model_name,
-
             version=version,
-
             stage=stage,
-
             archive_existing_versions=True,
-
         )
 
     # ---------------------------------------------------------
@@ -127,11 +107,8 @@ class ModelRegistry:
     ):
 
         self.client.delete_model_version(
-
             model_name,
-
             version,
-
         )
 
     # ---------------------------------------------------------
@@ -141,9 +118,7 @@ class ModelRegistry:
         model_name,
     ):
 
-        self.client.delete_registered_model(
-            model_name
-        )
+        self.client.delete_registered_model(model_name)
 
     # ---------------------------------------------------------
 
@@ -153,24 +128,16 @@ class ModelRegistry:
         output_dir="downloaded_models",
     ):
 
-        output_dir = Path(
-            output_dir
-        )
+        output_dir = Path(output_dir)
 
         output_dir.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
         return mlflow.artifacts.download_artifacts(
-
             artifact_uri=model_uri,
-
             dst_path=str(output_dir),
-
         )
 
     # ---------------------------------------------------------
@@ -180,9 +147,7 @@ class ModelRegistry:
         model_uri,
     ):
 
-        return mlflow.tensorflow.load_model(
-            model_uri
-        )
+        return mlflow.tensorflow.load_model(model_uri)
 
     # ---------------------------------------------------------
 
@@ -191,37 +156,23 @@ class ModelRegistry:
         model_name,
     ):
 
-        model = self.client.get_registered_model(
-            model_name
-        )
+        model = self.client.get_registered_model(model_name)
 
         print("\n" + "=" * 70)
         print("REGISTERED MODEL")
         print("=" * 70)
 
-        print(
-            f"Name        : {model.name}"
-        )
+        print(f"Name        : {model.name}")
 
-        print(
-            f"Description : {model.description}"
-        )
+        print(f"Description : {model.description}")
 
-        print(
-            f"Created     : {model.creation_timestamp}"
-        )
+        print(f"Created     : {model.creation_timestamp}")
 
-        print(
-            f"Updated     : {model.last_updated_timestamp}"
-        )
+        print(f"Updated     : {model.last_updated_timestamp}")
 
         print()
 
-        versions = self.client.search_model_versions(
-
-            f"name='{model_name}'"
-
-        )
+        versions = self.client.search_model_versions(f"name='{model_name}'")
 
         print("=" * 70)
         print("MODEL VERSIONS")
@@ -229,17 +180,11 @@ class ModelRegistry:
 
         for version in versions:
 
-            print(
-                f"Version : {version.version}"
-            )
+            print(f"Version : {version.version}")
 
-            print(
-                f"Stage   : {version.current_stage}"
-            )
+            print(f"Stage   : {version.current_stage}")
 
-            print(
-                f"Run ID  : {version.run_id}"
-            )
+            print(f"Run ID  : {version.run_id}")
 
             print("-" * 70)
 
@@ -252,13 +197,9 @@ class ModelRegistry:
     ):
 
         self.transition_stage(
-
             model_name=model_name,
-
             version=version,
-
             stage="Production",
-
         )
 
     # ---------------------------------------------------------
@@ -270,13 +211,9 @@ class ModelRegistry:
     ):
 
         self.transition_stage(
-
             model_name=model_name,
-
             version=version,
-
             stage="Staging",
-
         )
 
     # ---------------------------------------------------------
@@ -288,13 +225,9 @@ class ModelRegistry:
     ):
 
         self.transition_stage(
-
             model_name=model_name,
-
             version=version,
-
             stage="Archived",
-
         )
 
 

@@ -6,11 +6,11 @@ Compare multiple Deep Learning models.
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
 import json
+from pathlib import Path
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 class ModelComparison:
@@ -44,35 +44,26 @@ class ModelComparison:
     ):
 
         row = {
-
             "Model": model_name,
-
             "Accuracy": metrics.get(
                 "accuracy",
                 0,
             ),
-
             "Precision": metrics.get(
                 "precision",
                 0,
             ),
-
             "Recall": metrics.get(
                 "recall",
                 0,
             ),
-
             "F1 Score": metrics.get(
                 "f1_score",
                 0,
             ),
-
             "Training Time": training_time,
-
             "Inference Time": inference_time,
-
             "Parameters": parameters,
-
         }
 
         self.results.append(row)
@@ -81,9 +72,7 @@ class ModelComparison:
 
     def dataframe(self):
 
-        return pd.DataFrame(
-            self.results
-        )
+        return pd.DataFrame(self.results)
 
     # ---------------------------------------------------------
 
@@ -91,10 +80,7 @@ class ModelComparison:
 
         df = self.dataframe()
 
-        save_path = (
-            self.output_dir /
-            "model_comparison.csv"
-        )
+        save_path = self.output_dir / "model_comparison.csv"
 
         df.to_csv(
             save_path,
@@ -107,10 +93,7 @@ class ModelComparison:
 
     def save_json(self):
 
-        save_path = (
-            self.output_dir /
-            "model_comparison.json"
-        )
+        save_path = self.output_dir / "model_comparison.json"
 
         with open(
             save_path,
@@ -132,36 +115,24 @@ class ModelComparison:
 
         df = self.dataframe()
 
-        plt.figure(
-            figsize=(10, 6)
-        )
+        plt.figure(figsize=(10, 6))
 
         plt.bar(
-
             df["Model"],
-
             df["Accuracy"],
-
         )
 
         plt.ylabel("Accuracy")
 
         plt.xlabel("Model")
 
-        plt.title(
-            "Model Accuracy Comparison"
-        )
+        plt.title("Model Accuracy Comparison")
 
-        plt.xticks(
-            rotation=20
-        )
+        plt.xticks(rotation=20)
 
         plt.tight_layout()
 
-        save_path = (
-            self.output_dir /
-            "accuracy_comparison.png"
-        )
+        save_path = self.output_dir / "accuracy_comparison.png"
 
         plt.savefig(
             save_path,
@@ -178,36 +149,24 @@ class ModelComparison:
 
         df = self.dataframe()
 
-        plt.figure(
-            figsize=(10, 6)
-        )
+        plt.figure(figsize=(10, 6))
 
         plt.bar(
-
             df["Model"],
-
             df["F1 Score"],
-
         )
 
         plt.ylabel("F1 Score")
 
         plt.xlabel("Model")
 
-        plt.title(
-            "Model F1 Score Comparison"
-        )
+        plt.title("Model F1 Score Comparison")
 
-        plt.xticks(
-            rotation=20
-        )
+        plt.xticks(rotation=20)
 
         plt.tight_layout()
 
-        save_path = (
-            self.output_dir /
-            "f1_comparison.png"
-        )
+        save_path = self.output_dir / "f1_comparison.png"
 
         plt.savefig(
             save_path,
@@ -224,9 +183,7 @@ class ModelComparison:
 
         df = self.dataframe()
 
-        index = df[
-            "Accuracy"
-        ].idxmax()
+        index = df["Accuracy"].idxmax()
 
         return df.iloc[index]
 
@@ -247,17 +204,11 @@ class ModelComparison:
 
         best = self.best_model()
 
-        print(
-            f"Best Model : {best['Model']}"
-        )
+        print(f"Best Model : {best['Model']}")
 
-        print(
-            f"Accuracy   : {best['Accuracy']:.4f}"
-        )
+        print(f"Accuracy   : {best['Accuracy']:.4f}")
 
-        print(
-            f"F1 Score   : {best['F1 Score']:.4f}"
-        )
+        print(f"F1 Score   : {best['F1 Score']:.4f}")
 
     # ---------------------------------------------------------
 
@@ -267,26 +218,17 @@ class ModelComparison:
 
         json_path = self.save_json()
 
-        accuracy_plot = (
-            self.plot_accuracy()
-        )
+        accuracy_plot = self.plot_accuracy()
 
-        f1_plot = (
-            self.plot_f1()
-        )
+        f1_plot = self.plot_f1()
 
         self.print_summary()
 
         return {
-
             "csv": csv_path,
-
             "json": json_path,
-
             "accuracy_plot": accuracy_plot,
-
             "f1_plot": f1_plot,
-
         }
 
 
@@ -295,51 +237,29 @@ if __name__ == "__main__":
     comparison = ModelComparison()
 
     comparison.add_result(
-
         "Baseline CNN",
-
         {
-
             "accuracy": 0.962,
-
             "precision": 0.963,
-
             "recall": 0.962,
-
             "f1_score": 0.962,
-
         },
-
         training_time=120,
-
         inference_time=8,
-
         parameters=245000,
-
     )
 
     comparison.add_result(
-
         "EfficientNetB0",
-
         {
-
             "accuracy": 0.988,
-
             "precision": 0.988,
-
             "recall": 0.988,
-
             "f1_score": 0.988,
-
         },
-
         training_time=185,
-
         inference_time=12,
-
         parameters=5288548,
-
     )
 
     comparison.generate()

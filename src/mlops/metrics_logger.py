@@ -19,9 +19,7 @@ class MetricsLogger:
         tracking_uri="mlruns",
     ):
 
-        mlflow.set_tracking_uri(
-            tracking_uri
-        )
+        mlflow.set_tracking_uri(tracking_uri)
 
     # ---------------------------------------------------------
 
@@ -42,13 +40,9 @@ class MetricsLogger:
         else:
 
             mlflow.log_metric(
-
                 name,
-
                 float(value),
-
                 step=step,
-
             )
 
     # ---------------------------------------------------------
@@ -62,13 +56,9 @@ class MetricsLogger:
         for key, value in metrics.items():
 
             self.log_metric(
-
                 key,
-
                 value,
-
                 step,
-
             )
 
     # ---------------------------------------------------------
@@ -80,26 +70,16 @@ class MetricsLogger:
 
         history_dict = history.history
 
-        epochs = len(
-            history_dict[
-                "loss"
-            ]
-        )
+        epochs = len(history_dict["loss"])
 
-        for epoch in range(
-            epochs
-        ):
+        for epoch in range(epochs):
 
             for metric, values in history_dict.items():
 
                 mlflow.log_metric(
-
                     metric,
-
                     float(values[epoch]),
-
                     step=epoch,
-
                 )
 
     # ---------------------------------------------------------
@@ -114,24 +94,17 @@ class MetricsLogger:
     ):
 
         metrics = {
-
             "accuracy": accuracy,
-
             "precision": precision,
-
             "recall": recall,
-
             "f1_score": f1_score,
-
         }
 
         if loss is not None:
 
             metrics["loss"] = loss
 
-        self.log_metrics(
-            metrics
-        )
+        self.log_metrics(metrics)
 
     # ---------------------------------------------------------
 
@@ -172,10 +145,7 @@ class MetricsLogger:
         incorrect_predictions,
     ):
 
-        accuracy = (
-            correct_predictions /
-            total_predictions
-        )
+        accuracy = correct_predictions / total_predictions
 
         mlflow.log_metric(
             "total_predictions",
@@ -204,39 +174,25 @@ class MetricsLogger:
         confidence_scores,
     ):
 
-        confidence_scores = list(
-            confidence_scores
-        )
+        confidence_scores = list(confidence_scores)
 
-        if len(
-            confidence_scores
-        ) == 0:
+        if len(confidence_scores) == 0:
 
             return
 
         mlflow.log_metric(
-
             "confidence_mean",
-
-            sum(confidence_scores)
-            / len(confidence_scores),
-
+            sum(confidence_scores) / len(confidence_scores),
         )
 
         mlflow.log_metric(
-
             "confidence_min",
-
             min(confidence_scores),
-
         )
 
         mlflow.log_metric(
-
             "confidence_max",
-
             max(confidence_scores),
-
         )
 
     # ---------------------------------------------------------
@@ -248,13 +204,9 @@ class MetricsLogger:
     ):
 
         mlflow.log_metric(
-
             "learning_rate",
-
             learning_rate,
-
             step=epoch,
-
         )
 
     # ---------------------------------------------------------
@@ -269,43 +221,27 @@ class MetricsLogger:
     ):
 
         mlflow.log_metric(
-
             "train_loss",
-
             train_loss,
-
             step=epoch,
-
         )
 
         mlflow.log_metric(
-
             "train_accuracy",
-
             train_accuracy,
-
             step=epoch,
-
         )
 
         mlflow.log_metric(
-
             "validation_loss",
-
             validation_loss,
-
             step=epoch,
-
         )
 
         mlflow.log_metric(
-
             "validation_accuracy",
-
             validation_accuracy,
-
             step=epoch,
-
         )
 
     # ---------------------------------------------------------
@@ -318,11 +254,8 @@ class MetricsLogger:
         for key, value in metrics.items():
 
             mlflow.log_metric(
-
                 f"test_{key}",
-
                 float(value),
-
             )
 
 
@@ -336,15 +269,9 @@ if __name__ == "__main__":
     )
 
     logger.log_metrics(
-
         {
-
             "precision": 0.981,
-
             "recall": 0.982,
-
             "f1_score": 0.981,
-
         }
-
     )

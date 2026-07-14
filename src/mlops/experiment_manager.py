@@ -6,8 +6,8 @@ Production MLflow Experiment Manager
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 import mlflow
 from mlflow.tracking import MlflowClient
@@ -28,17 +28,11 @@ class ExperimentManager:
 
         self.tracking_uri = tracking_uri
 
-        mlflow.set_tracking_uri(
-            tracking_uri
-        )
+        mlflow.set_tracking_uri(tracking_uri)
 
-        self.client = MlflowClient(
-            tracking_uri=tracking_uri
-        )
+        self.client = MlflowClient(tracking_uri=tracking_uri)
 
-        self.experiment_id = (
-            self._create_or_get_experiment()
-        )
+        self.experiment_id = self._create_or_get_experiment()
 
     # ---------------------------------------------------------
 
@@ -46,17 +40,13 @@ class ExperimentManager:
         self,
     ):
 
-        experiment = mlflow.get_experiment_by_name(
-            self.experiment_name
-        )
+        experiment = mlflow.get_experiment_by_name(self.experiment_name)
 
         if experiment is not None:
 
             return experiment.experiment_id
 
-        experiment_id = mlflow.create_experiment(
-            self.experiment_name
-        )
+        experiment_id = mlflow.create_experiment(self.experiment_name)
 
         return experiment_id
 
@@ -64,17 +54,13 @@ class ExperimentManager:
 
     def set_experiment(self):
 
-        mlflow.set_experiment(
-            self.experiment_name
-        )
+        mlflow.set_experiment(self.experiment_name)
 
     # ---------------------------------------------------------
 
     def experiment(self):
 
-        return self.client.get_experiment(
-            self.experiment_id
-        )
+        return self.client.get_experiment(self.experiment_id)
 
     # ---------------------------------------------------------
 
@@ -91,18 +77,11 @@ class ExperimentManager:
 
         if run_name is None:
 
-            run_name = datetime.now().strftime(
-                "%Y%m%d_%H%M%S"
-            )
+            run_name = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         return self.client.create_run(
-
             experiment_id=self.experiment_id,
-
-            tags={
-                "mlflow.runName": run_name
-            },
-
+            tags={"mlflow.runName": run_name},
         )
 
     # ---------------------------------------------------------
@@ -112,9 +91,7 @@ class ExperimentManager:
         run_id,
     ):
 
-        self.client.delete_run(
-            run_id
-        )
+        self.client.delete_run(run_id)
 
     # ---------------------------------------------------------
 
@@ -123,9 +100,7 @@ class ExperimentManager:
         run_id,
     ):
 
-        return self.client.get_run(
-            run_id
-        )
+        return self.client.get_run(run_id)
 
     # ---------------------------------------------------------
 
@@ -137,20 +112,12 @@ class ExperimentManager:
 
         if order_by is None:
 
-            order_by = [
-                "metrics.accuracy DESC"
-            ]
+            order_by = ["metrics.accuracy DESC"]
 
         return self.client.search_runs(
-
-            experiment_ids=[
-                self.experiment_id
-            ],
-
+            experiment_ids=[self.experiment_id],
             order_by=order_by,
-
             max_results=max_results,
-
         )
 
     # ---------------------------------------------------------
@@ -161,17 +128,9 @@ class ExperimentManager:
     ):
 
         runs = self.client.search_runs(
-
-            experiment_ids=[
-                self.experiment_id
-            ],
-
-            order_by=[
-                f"metrics.{metric} DESC"
-            ],
-
+            experiment_ids=[self.experiment_id],
+            order_by=[f"metrics.{metric} DESC"],
             max_results=1,
-
         )
 
         if len(runs) == 0:
@@ -185,17 +144,9 @@ class ExperimentManager:
     def latest_run(self):
 
         runs = self.client.search_runs(
-
-            experiment_ids=[
-                self.experiment_id
-            ],
-
-            order_by=[
-                "attributes.start_time DESC"
-            ],
-
+            experiment_ids=[self.experiment_id],
+            order_by=["attributes.start_time DESC"],
             max_results=1,
-
         )
 
         if len(runs) == 0:
@@ -210,13 +161,7 @@ class ExperimentManager:
 
         runs = self.search_runs()
 
-        return [
-
-            run.info.run_id
-
-            for run in runs
-
-        ]
+        return [run.info.run_id for run in runs]
 
     # ---------------------------------------------------------
 
@@ -227,47 +172,30 @@ class ExperimentManager:
         destination="downloads",
     ):
 
-        destination = Path(
-            destination
-        )
+        destination = Path(destination)
 
         destination.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
         return self.client.download_artifacts(
-
             run_id,
-
             artifact_path,
-
             str(destination),
-
         )
 
     # ---------------------------------------------------------
 
     def delete_experiment(self):
 
-        self.client.delete_experiment(
-
-            self.experiment_id
-
-        )
+        self.client.delete_experiment(self.experiment_id)
 
     # ---------------------------------------------------------
 
     def restore_experiment(self):
 
-        self.client.restore_experiment(
-
-            self.experiment_id
-
-        )
+        self.client.restore_experiment(self.experiment_id)
 
     # ---------------------------------------------------------
 
@@ -279,21 +207,13 @@ class ExperimentManager:
         print("MLFLOW EXPERIMENT")
         print("=" * 70)
 
-        print(
-            f"Name          : {experiment.name}"
-        )
+        print(f"Name          : {experiment.name}")
 
-        print(
-            f"Experiment ID : {experiment.experiment_id}"
-        )
+        print(f"Experiment ID : {experiment.experiment_id}")
 
-        print(
-            f"Artifact URI  : {experiment.artifact_location}"
-        )
+        print(f"Artifact URI  : {experiment.artifact_location}")
 
-        print(
-            f"Lifecycle     : {experiment.lifecycle_stage}"
-        )
+        print(f"Lifecycle     : {experiment.lifecycle_stage}")
 
     # ---------------------------------------------------------
 
@@ -306,37 +226,25 @@ class ExperimentManager:
         print("RUN SUMMARY")
         print("=" * 70)
 
-        print(
-            f"Run ID : {run.info.run_id}"
-        )
+        print(f"Run ID : {run.info.run_id}")
 
-        print(
-            f"Status : {run.info.status}"
-        )
+        print(f"Status : {run.info.status}")
 
-        print(
-            f"Start  : {run.info.start_time}"
-        )
+        print(f"Start  : {run.info.start_time}")
 
-        print(
-            f"End    : {run.info.end_time}"
-        )
+        print(f"End    : {run.info.end_time}")
 
         print("\nParameters")
 
         for key, value in run.data.params.items():
 
-            print(
-                f"{key:<20}: {value}"
-            )
+            print(f"{key:<20}: {value}")
 
         print("\nMetrics")
 
         for key, value in run.data.metrics.items():
 
-            print(
-                f"{key:<20}: {value}"
-            )
+            print(f"{key:<20}: {value}")
 
     # ---------------------------------------------------------
 
@@ -347,17 +255,9 @@ class ExperimentManager:
     ):
 
         runs = self.client.search_runs(
-
-            experiment_ids=[
-                self.experiment_id
-            ],
-
-            order_by=[
-                f"metrics.{metric} DESC"
-            ],
-
+            experiment_ids=[self.experiment_id],
+            order_by=[f"metrics.{metric} DESC"],
             max_results=top_k,
-
         )
 
         print("\n" + "=" * 90)
@@ -371,11 +271,7 @@ class ExperimentManager:
                 0,
             )
 
-            print(
-                f"{i}. "
-                f"{run.info.run_id} "
-                f"-> {metric}: {value:.5f}"
-            )
+            print(f"{i}. " f"{run.info.run_id} " f"-> {metric}: {value:.5f}")
 
 
 if __name__ == "__main__":

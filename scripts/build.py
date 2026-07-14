@@ -6,10 +6,10 @@ Production Build Script
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 
 class ProjectBuilder:
@@ -70,9 +70,7 @@ class ProjectBuilder:
             check=True,
         )
 
-        api_requirements = Path(
-            "requirements-api.txt"
-        )
+        api_requirements = Path("requirements-api.txt")
 
         if api_requirements.exists():
 
@@ -97,17 +95,11 @@ class ProjectBuilder:
         print("=" * 70)
 
         folders = [
-
             "src",
-
             "configs",
-
             "models",
-
             "reports",
-
             "scripts",
-
         ]
 
         for folder in folders:
@@ -116,10 +108,7 @@ class ProjectBuilder:
 
             if folder.exists():
 
-                destination = (
-                    self.build_dir
-                    / folder.name
-                )
+                destination = self.build_dir / folder.name
 
                 shutil.copytree(
                     folder,
@@ -128,17 +117,11 @@ class ProjectBuilder:
                 )
 
         files = [
-
             "README.md",
-
             "requirements.txt",
-
             "requirements-api.txt",
-
             "Dockerfile",
-
             "docker-compose.yml",
-
         ]
 
         for file in files:
@@ -161,16 +144,9 @@ class ProjectBuilder:
         print("=" * 70)
 
         archive = shutil.make_archive(
-
-            base_name=str(
-                self.dist_dir
-                / "ASL-Vision"
-            ),
-
+            base_name=str(self.dist_dir / "ASL-Vision"),
             format="zip",
-
             root_dir=self.build_dir,
-
         )
 
         print()
@@ -189,13 +165,9 @@ class ProjectBuilder:
         print("Verifying Build")
         print("=" * 70)
 
-        files = list(
-            self.build_dir.rglob("*")
-        )
+        files = list(self.build_dir.rglob("*"))
 
-        print(
-            f"Files : {len(files)}"
-        )
+        print(f"Files : {len(files)}")
 
         return len(files) > 0
 

@@ -16,40 +16,27 @@ import tensorflow as tf
 from src.models.cnn import CNNModel
 from src.models.trainer import ModelTrainer
 
-
 # ---------------------------------------------------------
 # Dummy Dataset
 # ---------------------------------------------------------
 
+
 def create_dataset():
 
     x = np.random.rand(
-
         64,
-
         28,
-
         28,
-
         1,
-
     ).astype(np.float32)
 
     y = np.random.randint(
-
         0,
-
         24,
-
         64,
-
     )
 
-    dataset = tf.data.Dataset.from_tensor_slices(
-
-        (x, y)
-
-    )
+    dataset = tf.data.Dataset.from_tensor_slices((x, y))
 
     dataset = dataset.batch(16)
 
@@ -60,26 +47,20 @@ def create_dataset():
 # Dummy Model
 # ---------------------------------------------------------
 
+
 def create_model():
 
     builder = CNNModel(
-
         input_shape=(28, 28, 1),
-
         num_classes=24,
-
     )
 
     model = builder.build()
 
     model.compile(
-
         optimizer="adam",
-
         loss="sparse_categorical_crossentropy",
-
         metrics=["accuracy"],
-
     )
 
     return model
@@ -88,6 +69,7 @@ def create_model():
 # ---------------------------------------------------------
 # Dataset Test
 # ---------------------------------------------------------
+
 
 def test_dataset():
 
@@ -100,22 +82,21 @@ def test_dataset():
 # Model Test
 # ---------------------------------------------------------
 
+
 def test_model():
 
     model = create_model()
 
     assert isinstance(
-
         model,
-
         tf.keras.Model,
-
     )
 
 
 # ---------------------------------------------------------
 # Trainer Initialization
 # ---------------------------------------------------------
+
 
 def test_trainer():
 
@@ -126,15 +107,10 @@ def test_trainer():
     validation = create_dataset()
 
     trainer = ModelTrainer(
-
         model=model,
-
         train_dataset=train,
-
         validation_dataset=validation,
-
         epochs=1,
-
     )
 
     assert trainer is not None
@@ -143,6 +119,7 @@ def test_trainer():
 # ---------------------------------------------------------
 # Single Epoch Training
 # ---------------------------------------------------------
+
 
 def test_training():
 
@@ -153,15 +130,10 @@ def test_training():
     validation = create_dataset()
 
     trainer = ModelTrainer(
-
         model=model,
-
         train_dataset=train,
-
         validation_dataset=validation,
-
         epochs=1,
-
     )
 
     history = trainer.train()
@@ -173,6 +145,7 @@ def test_training():
 # History Test
 # ---------------------------------------------------------
 
+
 def test_history():
 
     model = create_model()
@@ -182,15 +155,10 @@ def test_history():
     validation = create_dataset()
 
     trainer = ModelTrainer(
-
         model=model,
-
         train_dataset=train,
-
         validation_dataset=validation,
-
         epochs=1,
-
     )
 
     history = trainer.train()
@@ -202,6 +170,7 @@ def test_history():
 # Accuracy Metric
 # ---------------------------------------------------------
 
+
 def test_accuracy():
 
     model = create_model()
@@ -211,33 +180,23 @@ def test_accuracy():
     validation = create_dataset()
 
     trainer = ModelTrainer(
-
         model=model,
-
         train_dataset=train,
-
         validation_dataset=validation,
-
         epochs=1,
-
     )
 
     history = trainer.train()
 
     keys = history.history.keys()
 
-    assert any(
-
-        "accuracy" in key
-
-        for key in keys
-
-    )
+    assert any("accuracy" in key for key in keys)
 
 
 # ---------------------------------------------------------
 # Model Save
 # ---------------------------------------------------------
+
 
 def test_save_model():
 
@@ -247,11 +206,7 @@ def test_save_model():
 
     save_path = Path(temp_dir) / "test.keras"
 
-    model.save(
-
-        save_path
-
-    )
+    model.save(save_path)
 
     assert save_path.exists()
 
@@ -259,6 +214,7 @@ def test_save_model():
 # ---------------------------------------------------------
 # Load Model
 # ---------------------------------------------------------
+
 
 def test_load_model():
 
@@ -268,24 +224,13 @@ def test_load_model():
 
     save_path = Path(temp_dir) / "model.keras"
 
-    model.save(
+    model.save(save_path)
 
-        save_path
-
-    )
-
-    loaded = tf.keras.models.load_model(
-
-        save_path
-
-    )
+    loaded = tf.keras.models.load_model(save_path)
 
     assert isinstance(
-
         loaded,
-
         tf.keras.Model,
-
     )
 
 
@@ -293,42 +238,33 @@ def test_load_model():
 # Prediction
 # ---------------------------------------------------------
 
+
 def test_prediction():
 
     model = create_model()
 
     sample = np.random.rand(
-
         1,
-
         28,
-
         28,
-
         1,
-
     ).astype(np.float32)
 
     prediction = model.predict(
-
         sample,
-
         verbose=0,
-
     )
 
     assert prediction.shape == (
-
         1,
-
         24,
-
     )
 
 
 # ---------------------------------------------------------
 # Evaluation
 # ---------------------------------------------------------
+
 
 def test_evaluation():
 
@@ -337,11 +273,8 @@ def test_evaluation():
     dataset = create_dataset()
 
     result = model.evaluate(
-
         dataset,
-
         verbose=0,
-
     )
 
     assert len(result) >= 2
@@ -350,6 +283,7 @@ def test_evaluation():
 # ---------------------------------------------------------
 # Parameter Count
 # ---------------------------------------------------------
+
 
 def test_parameters():
 
@@ -367,13 +301,8 @@ def test_parameters():
 if __name__ == "__main__":
 
     pytest.main(
-
         [
-
             "-v",
-
             __file__,
-
         ]
-
     )

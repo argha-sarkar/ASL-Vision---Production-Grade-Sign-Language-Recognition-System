@@ -15,23 +15,18 @@ import pytest
 
 from src.api.predictor import APIPredictor
 
-
 # ---------------------------------------------------------
 # Helper
 # ---------------------------------------------------------
 
+
 def create_test_image():
 
     image = np.random.randint(
-
         0,
-
         255,
-
         (224, 224, 3),
-
         dtype=np.uint8,
-
     )
 
     temp_dir = tempfile.mkdtemp()
@@ -39,11 +34,8 @@ def create_test_image():
     image_path = Path(temp_dir) / "sample.png"
 
     cv2.imwrite(
-
         str(image_path),
-
         image,
-
     )
 
     return image_path
@@ -52,6 +44,7 @@ def create_test_image():
 # ---------------------------------------------------------
 # Predictor Initialization
 # ---------------------------------------------------------
+
 
 def test_predictor_initialization():
 
@@ -64,6 +57,7 @@ def test_predictor_initialization():
 # Model Loaded
 # ---------------------------------------------------------
 
+
 def test_model_loaded():
 
     predictor = APIPredictor()
@@ -75,38 +69,25 @@ def test_model_loaded():
 # Preprocess
 # ---------------------------------------------------------
 
+
 def test_preprocess():
 
     predictor = APIPredictor()
 
     image = np.random.randint(
-
         0,
-
         255,
-
         (224, 224, 3),
-
         dtype=np.uint8,
-
     )
 
-    tensor = predictor.preprocess(
-
-        image
-
-    )
+    tensor = predictor.preprocess(image)
 
     assert tensor.shape == (
-
         1,
-
         28,
-
         28,
-
         1,
-
     )
 
 
@@ -114,27 +95,19 @@ def test_preprocess():
 # Predict
 # ---------------------------------------------------------
 
+
 def test_predict():
 
     predictor = APIPredictor()
 
     image = np.random.randint(
-
         0,
-
         255,
-
         (224, 224, 3),
-
         dtype=np.uint8,
-
     )
 
-    result = predictor.predict(
-
-        image
-
-    )
+    result = predictor.predict(image)
 
     assert "prediction" in result
 
@@ -147,17 +120,14 @@ def test_predict():
 # Predict File
 # ---------------------------------------------------------
 
+
 def test_predict_file():
 
     predictor = APIPredictor()
 
     image_path = create_test_image()
 
-    result = predictor.predict_file(
-
-        image_path
-
-    )
+    result = predictor.predict_file(image_path)
 
     assert "prediction" in result
 
@@ -165,6 +135,7 @@ def test_predict_file():
 # ---------------------------------------------------------
 # Folder Prediction
 # ---------------------------------------------------------
+
 
 def test_predict_folder():
 
@@ -177,30 +148,18 @@ def test_predict_folder():
     for i in range(3):
 
         image = np.random.randint(
-
             0,
-
             255,
-
             (224, 224, 3),
-
             dtype=np.uint8,
-
         )
 
         cv2.imwrite(
-
             str(folder / f"{i}.png"),
-
             image,
-
         )
 
-    results = predictor.predict_folder(
-
-        folder
-
-    )
+    results = predictor.predict_folder(folder)
 
     assert len(results) == 3
 
@@ -209,27 +168,19 @@ def test_predict_folder():
 # Confidence
 # ---------------------------------------------------------
 
+
 def test_confidence_range():
 
     predictor = APIPredictor()
 
     image = np.random.randint(
-
         0,
-
         255,
-
         (224, 224, 3),
-
         dtype=np.uint8,
-
     )
 
-    result = predictor.predict(
-
-        image
-
-    )
+    result = predictor.predict(image)
 
     assert 0.0 <= result["confidence"] <= 1.0
 
@@ -238,48 +189,33 @@ def test_confidence_range():
 # Probability Sum
 # ---------------------------------------------------------
 
+
 def test_probability_sum():
 
     predictor = APIPredictor()
 
     image = np.random.randint(
-
         0,
-
         255,
-
         (224, 224, 3),
-
         dtype=np.uint8,
-
     )
 
-    result = predictor.predict(
+    result = predictor.predict(image)
 
-        image
-
-    )
-
-    total = sum(
-
-        result["probabilities"]
-
-    )
+    total = sum(result["probabilities"])
 
     assert np.isclose(
-
         total,
-
         1.0,
-
         atol=1e-5,
-
     )
 
 
 # ---------------------------------------------------------
 # Health
 # ---------------------------------------------------------
+
 
 def test_health():
 
@@ -294,56 +230,39 @@ def test_health():
 # Invalid File
 # ---------------------------------------------------------
 
+
 def test_invalid_file():
 
     predictor = APIPredictor()
 
     with pytest.raises(Exception):
 
-        predictor.predict_file(
-
-            "invalid.png"
-
-        )
+        predictor.predict_file("invalid.png")
 
 
 # ---------------------------------------------------------
 # Multiple Predictions
 # ---------------------------------------------------------
 
+
 @pytest.mark.parametrize(
-
     "index",
-
     range(10),
-
 )
-
 def test_multiple_predictions(
-
     index,
-
 ):
 
     predictor = APIPredictor()
 
     image = np.random.randint(
-
         0,
-
         255,
-
         (224, 224, 3),
-
         dtype=np.uint8,
-
     )
 
-    result = predictor.predict(
-
-        image
-
-    )
+    result = predictor.predict(image)
 
     assert result is not None
 
@@ -352,6 +271,7 @@ def test_multiple_predictions(
 # Performance
 # ---------------------------------------------------------
 
+
 def test_prediction_speed():
 
     import time
@@ -359,24 +279,15 @@ def test_prediction_speed():
     predictor = APIPredictor()
 
     image = np.random.randint(
-
         0,
-
         255,
-
         (224, 224, 3),
-
         dtype=np.uint8,
-
     )
 
     start = time.time()
 
-    predictor.predict(
-
-        image
-
-    )
+    predictor.predict(image)
 
     elapsed = time.time() - start
 
@@ -390,13 +301,8 @@ def test_prediction_speed():
 if __name__ == "__main__":
 
     pytest.main(
-
         [
-
             "-v",
-
             __file__,
-
         ]
-
     )

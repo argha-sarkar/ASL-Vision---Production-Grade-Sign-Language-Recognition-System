@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.data.constants import TRAIN_FILE, TEST_FILE
+from src.data.constants import TEST_FILE, TRAIN_FILE
 
 
 class DataLoader:

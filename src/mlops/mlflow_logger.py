@@ -27,13 +27,9 @@ class MLflowLogger:
 
         self.tracking_uri = tracking_uri
 
-        mlflow.set_tracking_uri(
-            tracking_uri
-        )
+        mlflow.set_tracking_uri(tracking_uri)
 
-        mlflow.set_experiment(
-            experiment_name
-        )
+        mlflow.set_experiment(experiment_name)
 
     # ---------------------------------------------------------
 
@@ -42,9 +38,7 @@ class MLflowLogger:
         run_name=None,
     ):
 
-        mlflow.start_run(
-            run_name=run_name
-        )
+        mlflow.start_run(run_name=run_name)
 
     # ---------------------------------------------------------
 
@@ -72,9 +66,7 @@ class MLflowLogger:
         params,
     ):
 
-        mlflow.log_params(
-            params
-        )
+        mlflow.log_params(params)
 
     # ---------------------------------------------------------
 
@@ -111,13 +103,9 @@ class MLflowLogger:
         for key, value in metrics.items():
 
             self.log_metric(
-
                 key,
-
                 value,
-
                 step,
-
             )
 
     # ---------------------------------------------------------
@@ -129,11 +117,8 @@ class MLflowLogger:
     ):
 
         mlflow.tensorflow.log_model(
-
             model=model,
-
             artifact_path=artifact_path,
-
         )
 
     # ---------------------------------------------------------
@@ -147,9 +132,7 @@ class MLflowLogger:
 
         if filepath.exists():
 
-            mlflow.log_artifact(
-                str(filepath)
-            )
+            mlflow.log_artifact(str(filepath))
 
     # ---------------------------------------------------------
 
@@ -162,9 +145,7 @@ class MLflowLogger:
 
         if directory.exists():
 
-            mlflow.log_artifacts(
-                str(directory)
-            )
+            mlflow.log_artifacts(str(directory))
 
     # ---------------------------------------------------------
 
@@ -175,11 +156,8 @@ class MLflowLogger:
     ):
 
         mlflow.log_figure(
-
             figure,
-
             filename,
-
         )
 
     # ---------------------------------------------------------
@@ -191,11 +169,8 @@ class MLflowLogger:
     ):
 
         mlflow.log_text(
-
             text,
-
             filename,
-
         )
 
     # ---------------------------------------------------------
@@ -207,11 +182,8 @@ class MLflowLogger:
     ):
 
         mlflow.log_dict(
-
             dictionary,
-
             filename,
-
         )
 
     # ---------------------------------------------------------
@@ -221,9 +193,7 @@ class MLflowLogger:
         tags,
     ):
 
-        mlflow.set_tags(
-            tags
-        )
+        mlflow.set_tags(tags)
 
     # ---------------------------------------------------------
 
@@ -245,26 +215,14 @@ class MLflowLogger:
         history,
     ):
 
-        for epoch in range(
-
-            len(
-                history.history[
-                    "loss"
-                ]
-            )
-
-        ):
+        for epoch in range(len(history.history["loss"])):
 
             for metric, values in history.history.items():
 
                 self.log_metric(
-
                     metric,
-
                     values[epoch],
-
                     epoch,
-
                 )
 
     # ---------------------------------------------------------
@@ -274,20 +232,15 @@ class MLflowLogger:
     ):
 
         import platform
+
         import tensorflow as tf
 
         self.log_tags(
-
             {
-
                 "platform": platform.platform(),
-
                 "python": platform.python_version(),
-
                 "tensorflow": tf.__version__,
-
             }
-
         )
 
     # ---------------------------------------------------------
@@ -304,21 +257,13 @@ class MLflowLogger:
 
         self.log_system_information()
 
-        self.log_params(
-            parameters
-        )
+        self.log_params(parameters)
 
-        self.log_metrics(
-            metrics
-        )
+        self.log_metrics(metrics)
 
-        self.log_history(
-            history
-        )
+        self.log_history(history)
 
-        self.log_model(
-            model
-        )
+        self.log_model(model)
 
         self.end_run()
 
@@ -339,9 +284,7 @@ class MLflowLogger:
 
             if file.is_file():
 
-                mlflow.log_artifact(
-                    str(file)
-                )
+                mlflow.log_artifact(str(file))
 
     # ---------------------------------------------------------
 
@@ -365,20 +308,14 @@ class MLflowLogger:
 
     def get_experiment(self):
 
-        return mlflow.get_experiment_by_name(
-
-            self.experiment_name
-
-        )
+        return mlflow.get_experiment_by_name(self.experiment_name)
 
 
 if __name__ == "__main__":
 
     logger = MLflowLogger()
 
-    logger.start_run(
-        "test_run"
-    )
+    logger.start_run("test_run")
 
     logger.log_param(
         "learning_rate",

@@ -6,8 +6,8 @@ Production MLflow Report Generator
 Author: Argha Sarkar Project
 """
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 import mlflow
 import pandas as pd
@@ -26,37 +26,24 @@ class MLflowReport:
         output_dir="reports/mlflow",
     ):
 
-        mlflow.set_tracking_uri(
-            tracking_uri
-        )
+        mlflow.set_tracking_uri(tracking_uri)
 
-        self.client = MlflowClient(
-            tracking_uri=tracking_uri
-        )
+        self.client = MlflowClient(tracking_uri=tracking_uri)
 
         self.experiment_name = experiment_name
 
-        self.output_dir = Path(
-            output_dir
-        )
+        self.output_dir = Path(output_dir)
 
         self.output_dir.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
-        experiment = mlflow.get_experiment_by_name(
-            experiment_name
-        )
+        experiment = mlflow.get_experiment_by_name(experiment_name)
 
         if experiment is None:
 
-            raise ValueError(
-                f"Experiment '{experiment_name}' not found."
-            )
+            raise ValueError(f"Experiment '{experiment_name}' not found.")
 
         self.experiment_id = experiment.experiment_id
 
@@ -65,13 +52,8 @@ class MLflowReport:
     def load_runs(self):
 
         runs = self.client.search_runs(
-
-            experiment_ids=[
-                self.experiment_id
-            ],
-
+            experiment_ids=[self.experiment_id],
             max_results=10000,
-
         )
 
         data = []
@@ -79,28 +61,15 @@ class MLflowReport:
         for run in runs:
 
             row = {
-
-                "Run ID":
-                    run.info.run_id,
-
-                "Status":
-                    run.info.status,
-
-                "Start Time":
-                    run.info.start_time,
-
-                "End Time":
-                    run.info.end_time,
-
+                "Run ID": run.info.run_id,
+                "Status": run.info.status,
+                "Start Time": run.info.start_time,
+                "End Time": run.info.end_time,
             }
 
-            row.update(
-                run.data.params
-            )
+            row.update(run.data.params)
 
-            row.update(
-                run.data.metrics
-            )
+            row.update(run.data.metrics)
 
             data.append(row)
 
@@ -113,17 +82,11 @@ class MLflowReport:
         dataframe,
     ):
 
-        path = (
-            self.output_dir
-            / "experiment_runs.csv"
-        )
+        path = self.output_dir / "experiment_runs.csv"
 
         dataframe.to_csv(
-
             path,
-
             index=False,
-
         )
 
         return path
@@ -135,17 +98,11 @@ class MLflowReport:
         dataframe,
     ):
 
-        path = (
-            self.output_dir
-            / "experiment_runs.xlsx"
-        )
+        path = self.output_dir / "experiment_runs.xlsx"
 
         dataframe.to_excel(
-
             path,
-
             index=False,
-
         )
 
         return path
@@ -162,11 +119,7 @@ class MLflowReport:
 
             return None
 
-        return dataframe.loc[
-            dataframe[
-                metric
-            ].idxmax()
-        ]
+        return dataframe.loc[dataframe[metric].idxmax()]
 
     # ---------------------------------------------------------
 
@@ -175,14 +128,9 @@ class MLflowReport:
         dataframe,
     ):
 
-        report_path = (
-            self.output_dir
-            / "mlflow_report.md"
-        )
+        report_path = self.output_dir / "mlflow_report.md"
 
-        best = self.best_run(
-            dataframe
-        )
+        best = self.best_run(dataframe)
 
         markdown = f"""# MLflow Experiment Report
 
@@ -226,9 +174,7 @@ Accuracy:
 
 """
 
-        markdown += dataframe.to_markdown(
-            index=False
-        )
+        markdown += dataframe.to_markdown(index=False)
 
         markdown += """
 
@@ -243,13 +189,9 @@ Accuracy:
 """
 
         with open(
-
             report_path,
-
             "w",
-
             encoding="utf-8",
-
         ) as file:
 
             file.write(markdown)
@@ -267,27 +209,17 @@ Accuracy:
         print("MLFLOW REPORT")
         print("=" * 70)
 
-        print(
-            f"Experiment : {self.experiment_name}"
-        )
+        print(f"Experiment : {self.experiment_name}")
 
-        print(
-            f"Runs       : {len(dataframe)}"
-        )
+        print(f"Runs       : {len(dataframe)}")
 
-        best = self.best_run(
-            dataframe
-        )
+        best = self.best_run(dataframe)
 
         if best is not None:
 
-            print(
-                f"Best Accuracy : {best['accuracy']:.5f}"
-            )
+            print(f"Best Accuracy : {best['accuracy']:.5f}")
 
-            print(
-                f"Best Run ID   : {best['Run ID']}"
-            )
+            print(f"Best Run ID   : {best['Run ID']}")
 
     # ---------------------------------------------------------
 
@@ -295,21 +227,13 @@ Accuracy:
 
         dataframe = self.load_runs()
 
-        csv_path = self.save_csv(
-            dataframe
-        )
+        csv_path = self.save_csv(dataframe)
 
-        excel_path = self.save_excel(
-            dataframe
-        )
+        excel_path = self.save_excel(dataframe)
 
-        markdown_path = self.markdown_report(
-            dataframe
-        )
+        markdown_path = self.markdown_report(dataframe)
 
-        self.summary(
-            dataframe
-        )
+        self.summary(dataframe)
 
         print("\nGenerated Files\n")
 
@@ -320,15 +244,10 @@ Accuracy:
         print(markdown_path)
 
         return {
-
             "dataframe": dataframe,
-
             "csv": csv_path,
-
             "excel": excel_path,
-
             "markdown": markdown_path,
-
         }
 
 

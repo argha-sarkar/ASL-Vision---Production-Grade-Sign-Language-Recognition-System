@@ -11,32 +11,24 @@ Responsibilities:
 5. Visualize class distribution
 """
 
-import uvicorn
-
 from pprint import pprint
 
-from src.data.loader import DataLoader
-from src.data.validator import DataValidator
-from src.profiling.profiler import DatasetProfiler
-from src.profiling.statistics import DatasetStatistics
-from src.visualization.plots import DatasetPlots
-
-
-from src.preprocessing.image_processor import ImageProcessor
-from src.preprocessing.normalization import ImageNormalization
-from src.preprocessing.tensor_converter import TensorConverter
-
-
-from src.training.pipeline import TrainingPipeline
-from src.training.seed import SeedManager
-
-from src.models.trainer import ModelTrainer
-
-from src.preprocessing.label_encoder import LabelEncoder
-
-from src.evaluation.evaluator import ModelEvaluator
+import uvicorn
 
 from src.api.config import settings
+from src.data.loader import DataLoader
+from src.data.validator import DataValidator
+from src.evaluation.evaluator import ModelEvaluator
+from src.models.trainer import ModelTrainer
+from src.preprocessing.image_processor import ImageProcessor
+from src.preprocessing.label_encoder import LabelEncoder
+from src.preprocessing.normalization import ImageNormalization
+from src.preprocessing.tensor_converter import TensorConverter
+from src.profiling.profiler import DatasetProfiler
+from src.profiling.statistics import DatasetStatistics
+from src.training.pipeline import TrainingPipeline
+from src.training.seed import SeedManager
+from src.visualization.plots import DatasetPlots
 
 
 def validate_dataset(dataset_name: str, dataframe):
@@ -147,17 +139,13 @@ def main():
 
     print()
 
-    
-    
-# -------------------------------
-# Image Reconstruction
-# -------------------------------
+    # -------------------------------
+    # Image Reconstruction
+    # -------------------------------
 
     images = ImageProcessor.reconstruct_images(train_df)
 
-    labels, label_mapping = LabelEncoder.encode(
-    train_df["label"].values
-)
+    labels, label_mapping = LabelEncoder.encode(train_df["label"].values)
 
     print("\nLabel Mapping")
 
@@ -165,15 +153,9 @@ def main():
 
     print(f"Images Shape : {images.shape}")
 
-    DatasetPlots.show_random_images(
-        images,
-        labels
-    )
+    DatasetPlots.show_random_images(images, labels)
 
-    DatasetPlots.show_class_examples(
-        images,
-        labels
-    )
+    DatasetPlots.show_class_examples(images, labels)
 
     DatasetPlots.pixel_histogram(images)
 
@@ -183,23 +165,20 @@ def main():
 
     normalized_images = ImageNormalization.normalize(images)
 
-    tensor_images = TensorConverter.to_tensor(
-        normalized_images
-    )
+    tensor_images = TensorConverter.to_tensor(normalized_images)
 
     print("Tensor Shape :", tensor_images.shape)
     print()
-    
-    
-# --------------------------------------------------
-# Set Seed
-# --------------------------------------------------
+
+    # --------------------------------------------------
+    # Set Seed
+    # --------------------------------------------------
 
     SeedManager.set_seed()
 
-# --------------------------------------------------
-# Build Training Pipeline
-# --------------------------------------------------
+    # --------------------------------------------------
+    # Build Training Pipeline
+    # --------------------------------------------------
 
     (
         train_dataset,
@@ -232,48 +211,35 @@ def main():
     num_classes = len(label_mapping)
 
     trainer = ModelTrainer(
-
-        input_shape=(28,28,1),
-
+        input_shape=(28, 28, 1),
         num_classes=num_classes,
-
         learning_rate=0.001,
-
         epochs=50,
-
     )
 
     model, history = trainer.train(
-
         train_dataset=train_dataset,
-
         validation_dataset=validation_dataset,
-
     )
-    
-    
-# ====================================================
-# Model Evaluation
-# ====================================================
+
+    # ====================================================
+    # Model Evaluation
+    # ====================================================
 
     print("\nStarting Model Evaluation...\n")
 
     evaluator = ModelEvaluator()
 
     evaluation = evaluator.evaluate(
-
         images=x_val,
-
         labels=y_val,
-
     )
 
-    metrics       = evaluation["metrics"]
-    predictions   = evaluation["predictions"]
+    metrics = evaluation["metrics"]
+    predictions = evaluation["predictions"]
     probabilities = evaluation["probabilities"]
 
     print("\nEvaluation Finished Successfully.")
-    
 
     print()
 
@@ -285,15 +251,8 @@ def main():
 if __name__ == "__main__":
 
     uvicorn.run(
-
         "src.api.app:app",
-
         host=settings.HOST,
-
         port=settings.PORT,
-
         reload=settings.DEBUG,
-
     )
-    
-    

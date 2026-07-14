@@ -40,32 +40,19 @@ class Benchmark:
 
         if not self.model_path.exists():
 
-            raise FileNotFoundError(
+            raise FileNotFoundError(f"{self.model_path} not found.")
 
-                f"{self.model_path} not found."
-
-            )
-
-        return tf.keras.models.load_model(
-
-            self.model_path
-
-        )
+        return tf.keras.models.load_model(self.model_path)
 
     # ---------------------------------------------------------
 
     def dummy_input(self):
 
         return np.random.rand(
-
             1,
-
             self.input_shape[0],
-
             self.input_shape[1],
-
             self.input_shape[2],
-
         ).astype(np.float32)
 
     # ---------------------------------------------------------
@@ -77,11 +64,8 @@ class Benchmark:
         for _ in range(10):
 
             self.model.predict(
-
                 image,
-
                 verbose=0,
-
             )
 
     # ---------------------------------------------------------
@@ -97,53 +81,35 @@ class Benchmark:
             start = time.perf_counter()
 
             self.model.predict(
-
                 image,
-
                 verbose=0,
-
             )
 
             end = time.perf_counter()
 
-            times.append(
-
-                (end - start) * 1000
-
-            )
+            times.append((end - start) * 1000)
 
         return times
 
     # ---------------------------------------------------------
 
     def benchmark_batch(
-
         self,
-
         batch_size=32,
-
     ):
 
         images = np.random.rand(
-
             batch_size,
-
             self.input_shape[0],
-
             self.input_shape[1],
-
             self.input_shape[2],
-
         ).astype(np.float32)
 
         start = time.perf_counter()
 
         self.model.predict(
-
             images,
-
             verbose=0,
-
         )
 
         end = time.perf_counter()
@@ -156,37 +122,20 @@ class Benchmark:
 
         parameters = self.model.count_params()
 
-        size_mb = (
-
-            parameters * 4
-
-        ) / (1024 ** 2)
+        size_mb = (parameters * 4) / (1024**2)
 
         return size_mb
 
     # ---------------------------------------------------------
 
     def throughput(
-
         self,
-
         batch_size=32,
-
     ):
 
-        elapsed = self.benchmark_batch(
+        elapsed = self.benchmark_batch(batch_size)
 
-            batch_size
-
-        )
-
-        return (
-
-            batch_size /
-
-            (elapsed / 1000)
-
-        )
+        return batch_size / (elapsed / 1000)
 
     # ---------------------------------------------------------
 
@@ -194,56 +143,20 @@ class Benchmark:
 
         self.warmup()
 
-        prediction_times = (
+        prediction_times = self.benchmark_prediction()
 
-            self.benchmark_prediction()
-
-        )
-
-        batch_time = (
-
-            self.benchmark_batch()
-
-        )
+        batch_time = self.benchmark_batch()
 
         report = {
-
-            "Average Latency (ms)":
-
-                np.mean(prediction_times),
-
-            "Minimum Latency (ms)":
-
-                np.min(prediction_times),
-
-            "Maximum Latency (ms)":
-
-                np.max(prediction_times),
-
-            "Median Latency (ms)":
-
-                np.median(prediction_times),
-
-            "Std Dev (ms)":
-
-                np.std(prediction_times),
-
-            "Batch Time (32 Images)":
-
-                batch_time,
-
-            "Throughput (Images/sec)":
-
-                self.throughput(),
-
-            "Parameters":
-
-                self.model.count_params(),
-
-            "Estimated Model Size (MB)":
-
-                self.memory_usage(),
-
+            "Average Latency (ms)": np.mean(prediction_times),
+            "Minimum Latency (ms)": np.min(prediction_times),
+            "Maximum Latency (ms)": np.max(prediction_times),
+            "Median Latency (ms)": np.median(prediction_times),
+            "Std Dev (ms)": np.std(prediction_times),
+            "Batch Time (32 Images)": batch_time,
+            "Throughput (Images/sec)": self.throughput(),
+            "Parameters": self.model.count_params(),
+            "Estimated Model Size (MB)": self.memory_usage(),
         }
 
         return report
@@ -251,11 +164,8 @@ class Benchmark:
     # ---------------------------------------------------------
 
     def save_report(
-
         self,
-
         output="reports/testing/benchmark.csv",
-
     ):
 
         report = self.generate_report()
@@ -263,33 +173,21 @@ class Benchmark:
         output = Path(output)
 
         output.parent.mkdir(
-
             parents=True,
-
             exist_ok=True,
-
         )
 
         dataframe = pd.DataFrame(
-
             report.items(),
-
             columns=[
-
                 "Metric",
-
                 "Value",
-
             ],
-
         )
 
         dataframe.to_csv(
-
             output,
-
             index=False,
-
         )
 
         return output
@@ -311,26 +209,15 @@ class Benchmark:
         for key, value in report.items():
 
             if isinstance(
-
                 value,
-
                 float,
-
             ):
 
-                print(
-
-                    f"{key:<35}: {value:.4f}"
-
-                )
+                print(f"{key:<35}: {value:.4f}")
 
             else:
 
-                print(
-
-                    f"{key:<35}: {value}"
-
-                )
+                print(f"{key:<35}: {value}")
 
         print("=" * 70)
 

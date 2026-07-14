@@ -6,7 +6,7 @@ DenseNet121 Transfer Learning Model.
 Author: Argha Sarkar Project
 """
 
-from tensorflow.keras.applications import DenseNet121
+from keras.applications import DenseNet121
 
 from src.transfer_learning.base_model import BaseTransferModel
 
@@ -44,15 +44,10 @@ class DenseNetModel(BaseTransferModel):
     def get_backbone(self):
 
         backbone = DenseNet121(
-
             include_top=False,
-
             weights=self.weights,
-
             input_shape=self.input_shape,
-
             pooling=None,
-
         )
 
         return backbone
@@ -61,13 +56,9 @@ class DenseNetModel(BaseTransferModel):
 if __name__ == "__main__":
 
     builder = DenseNetModel(
-
         input_shape=(224, 224, 3),
-
         num_classes=24,
-
         trainable=False,
-
     )
 
     model = builder.build()
