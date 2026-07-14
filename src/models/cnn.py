@@ -28,9 +28,14 @@ class CNNModel:
     for image classification.
     """
 
-    def __init__(self,
-                 num_classes: int,
-                 input_shape=(28, 28, 1)):
+    def __init__(
+
+        self,
+
+        input_shape,
+
+        num_classes,
+    ):
 
         self.input_shape = input_shape
         self.num_classes = num_classes

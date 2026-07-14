@@ -1,0 +1,15 @@
+{
+    "model_name": "ASL CNN Baseline",
+    "metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+    },
+    "confidence_summary": {
+        "Mean Confidence": 0.9999737739562988,
+        "Minimum Confidence": 0.987337052822113,
+        "Maximum Confidence": 1.0,
+        "Median Confidence": 0.9999986886978149
+    }
+}

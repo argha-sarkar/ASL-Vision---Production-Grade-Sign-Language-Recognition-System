@@ -1,32 +1,67 @@
 """
 evaluator.py
 
-Complete production-grade evaluation pipeline.
+Production-grade evaluation pipeline.
 
 Responsibilities
 ----------------
-1. Load trained model
-2. Predict validation/test images
-3. Calculate evaluation metrics
+1. Generate predictions
+2. Compute metrics
+3. Save reports
 4. Generate confusion matrix
-5. Generate confidence analysis
-6. Save reports
+5. Perform confidence analysis
+6. Save misclassified gallery
+7. Generate Grad-CAM
+8. Generate feature maps
+9. Generate activation maps
+10. Generate explainability report
+
+Author: Argha Sarkar Project
 """
+
+from typing import Dict
+import logging
 
 from src.evaluation.predictor import Predictor
 from src.evaluation.metrics import EvaluationMetrics
 from src.evaluation.confusion_matrix import (
     ConfusionMatrixGenerator,
 )
-from src.evaluation.report import EvaluationReport
+from src.evaluation.report import (
+    EvaluationReport,
+)
+
 from src.explainability.confidence import (
     ConfidenceAnalyzer,
 )
 
+from src.explainability.misclassified import (
+    MisclassifiedAnalyzer,
+)
+
+from src.explainability.gradcam import (
+    GradCAM,
+)
+
+from src.explainability.feature_maps import (
+    FeatureMapVisualizer,
+)
+
+from src.explainability.activation_maps import (
+    ActivationMapVisualizer,
+)
+
+from src.explainability.report import (
+    ExplainabilityReport,
+)
+
+
+logger = logging.getLogger(__name__)
+
 
 class ModelEvaluator:
     """
-    Complete model evaluation pipeline.
+    Complete evaluation pipeline.
     """
 
     def __init__(
@@ -34,151 +69,193 @@ class ModelEvaluator:
         model_path="models/best_model.keras",
     ):
 
+        logger.info("Initializing evaluator...")
+
         self.predictor = Predictor(model_path)
 
         self.metrics = EvaluationMetrics()
 
-        self.report = EvaluationReport()
-
         self.confusion = ConfusionMatrixGenerator()
 
+        self.report = EvaluationReport()
+
         self.confidence = ConfidenceAnalyzer()
+
+        self.misclassified = MisclassifiedAnalyzer()
+
+        self.gradcam = GradCAM(
+            self.predictor.model
+        )
+
+        self.feature_maps = FeatureMapVisualizer(
+            self.predictor.model
+        )
+
+        self.activation_maps = (
+            ActivationMapVisualizer(
+                self.predictor.model
+            )
+        )
+
+        self.explainability = (
+            ExplainabilityReport()
+        )
 
     def evaluate(
         self,
         images,
         labels,
         class_names=None,
-    ):
+    ) -> Dict:
 
-        print("\n" + "=" * 70)
-        print("MODEL EVALUATION")
-        print("=" * 70)
+        logger.info("Starting evaluation...")
 
-        # -------------------------------------------------
+        # --------------------------------------------
         # Prediction
-        # -------------------------------------------------
+        # --------------------------------------------
 
-        print("\nGenerating Predictions...\n")
-
-        predictions, probabilities = self.predictor.predict(
-            images
+        predictions, probabilities = (
+            self.predictor.predict(images)
         )
 
-        # -------------------------------------------------
+        # --------------------------------------------
         # Metrics
-        # -------------------------------------------------
+        # --------------------------------------------
 
         metrics = self.metrics.calculate(
+
             labels,
+
             predictions,
+
         )
 
-        classification_report = (
+        classification = (
             self.metrics.classification(
+
                 labels,
+
                 predictions,
+
             )
         )
 
-        # -------------------------------------------------
-        # Save Reports
-        # -------------------------------------------------
+        # --------------------------------------------
+        # Save Evaluation Reports
+        # --------------------------------------------
 
         self.report.save_metrics(metrics)
 
         self.report.save_classification_report(
-            classification_report
+            classification
         )
 
         self.report.save_summary(metrics)
 
-        # -------------------------------------------------
+        # --------------------------------------------
         # Confusion Matrix
-        # -------------------------------------------------
+        # --------------------------------------------
 
-        confusion_path = self.confusion.generate(
-            labels,
-            predictions,
-            class_names,
+        confusion_path = (
+            self.confusion.generate(
+
+                labels,
+
+                predictions,
+
+                class_names,
+
+            )
         )
 
-        # -------------------------------------------------
+        # --------------------------------------------
         # Confidence Analysis
-        # -------------------------------------------------
+        # --------------------------------------------
 
         confidence_summary = (
             self.confidence.confidence_summary(
+
                 probabilities
+
             )
         )
 
         confidence_plot = (
             self.confidence.confidence_histogram(
+
                 probabilities
+
             )
         )
 
         low_confidence = (
             self.confidence.low_confidence_indices(
+
                 probabilities,
+
                 threshold=0.70,
+
             )
         )
 
-        # -------------------------------------------------
-        # Print Metrics
-        # -------------------------------------------------
+        # --------------------------------------------
+        # Misclassified Images
+        # --------------------------------------------
 
-        print("=" * 70)
-        print("Evaluation Metrics")
-        print("=" * 70)
+        gallery = (
+            self.misclassified.save_gallery(
 
-        for key, value in metrics.items():
+                images,
 
-            print(f"{key:<15}: {value:.4f}")
+                labels,
 
-        # -------------------------------------------------
-        # Confidence Summary
-        # -------------------------------------------------
+                predictions,
 
-        print("\n" + "=" * 70)
-        print("Confidence Summary")
-        print("=" * 70)
+                probabilities,
 
-        for key, value in confidence_summary.items():
-
-            print(f"{key:<25}: {value:.4f}")
-
-        print()
-
-        print(
-            f"Low Confidence Predictions (<70%) : {len(low_confidence)}"
+            )
         )
 
-        # -------------------------------------------------
-        # Files Saved
-        # -------------------------------------------------
+        # --------------------------------------------
+        # Explainability
+        # --------------------------------------------
 
-        print("\n" + "=" * 70)
-        print("Generated Reports")
-        print("=" * 70)
+        total = min(
+            5,
+            len(images),
+        )
 
-        print(f"Confusion Matrix : {confusion_path}")
+        for index in range(total):
 
-        print(f"Confidence Plot  : {confidence_plot}")
+            self.gradcam.save(
 
-        print("Metrics          : reports/evaluation/metrics.json")
+                image=images[index],
 
-        print("Classification   : reports/evaluation/classification_report.txt")
+                filename=f"gradcam_{index}.png",
 
-        print("Summary          : reports/evaluation/summary.md")
+            )
 
-        print()
+        self.feature_maps.generate(
+            images[0]
+        )
 
-        print("=" * 70)
-        print("Evaluation Completed Successfully")
-        print("=" * 70)
+        self.activation_maps.generate(
+            images[0]
+        )
+
+        explainability_report = (
+            self.explainability.generate(
+
+                metrics=metrics,
+
+                confidence=confidence_summary,
+
+                model_name="ASL CNN Baseline",
+
+            )
+        )
+
+        logger.info("Evaluation complete.")
 
         return {
 
@@ -188,8 +265,18 @@ class ModelEvaluator:
 
             "probabilities": probabilities,
 
+            "classification_report": classification,
+
+            "confusion_matrix": confusion_path,
+
             "confidence_summary": confidence_summary,
 
-            "low_confidence_indices": low_confidence,
+            "confidence_plot": confidence_plot,
+
+            "low_confidence": low_confidence,
+
+            "misclassified_gallery": gallery,
+
+            "explainability_report": explainability_report,
 
         }

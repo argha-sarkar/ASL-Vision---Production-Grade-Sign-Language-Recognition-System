@@ -256,13 +256,17 @@ def main():
 
     evaluator = ModelEvaluator()
 
-    metrics, predictions, probabilities = evaluator.evaluate(
+    evaluation = evaluator.evaluate(
 
         images=x_val,
 
         labels=y_val,
 
     )
+
+    metrics       = evaluation["metrics"]
+    predictions   = evaluation["predictions"]
+    probabilities = evaluation["probabilities"]
 
     print("\nEvaluation Finished Successfully.")
     

@@ -13,7 +13,6 @@ Responsibilities
 5. Save training history
 """
 
-from tensorflow.python.platform import self_check
 from pathlib import Path
 import json
 from typing import Dict
