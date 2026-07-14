@@ -25,6 +25,16 @@ from src.preprocessing.normalization import ImageNormalization
 from src.preprocessing.tensor_converter import TensorConverter
 
 
+from src.training.pipeline import TrainingPipeline
+from src.training.seed import SeedManager
+
+from src.models.trainer import ModelTrainer
+
+from src.preprocessing.label_encoder import LabelEncoder
+
+from src.evaluation.evaluator import ModelEvaluator
+
+
 def validate_dataset(dataset_name: str, dataframe):
     """
     Validate a dataset and print validation results.
@@ -141,7 +151,13 @@ def main():
 
     images = ImageProcessor.reconstruct_images(train_df)
 
-    labels = train_df["label"].values
+    labels, label_mapping = LabelEncoder.encode(
+    train_df["label"].values
+)
+
+    print("\nLabel Mapping")
+
+    print(label_mapping)
 
     print(f"Images Shape : {images.shape}")
 
@@ -168,11 +184,91 @@ def main():
     )
 
     print("Tensor Shape :", tensor_images.shape)
-    
-    
-    
     print()
     
+    
+# --------------------------------------------------
+# Set Seed
+# --------------------------------------------------
+
+    SeedManager.set_seed()
+
+# --------------------------------------------------
+# Build Training Pipeline
+# --------------------------------------------------
+
+    (
+        train_dataset,
+        validation_dataset,
+        x_train,
+        x_val,
+        y_train,
+        y_val,
+    ) = TrainingPipeline.prepare(
+        tensor_images,
+        labels,
+        batch_size=64,
+    )
+
+    print("=" * 70)
+    print("Training Pipeline")
+    print("=" * 70)
+
+    print("Training Images :", x_train.shape)
+    print("Validation Images :", x_val.shape)
+
+    print()
+
+    print("TensorFlow Dataset Created Successfully")
+
+    # ==========================================================
+    # Train Model
+    # ==========================================================
+
+    num_classes = len(label_mapping)
+
+    trainer = ModelTrainer(
+
+        input_shape=(28,28,1),
+
+        num_classes=num_classes,
+
+        learning_rate=0.001,
+
+        epochs=50,
+
+    )
+
+    model, history = trainer.train(
+
+        train_dataset=train_dataset,
+
+        validation_dataset=validation_dataset,
+
+    )
+    
+    
+# ====================================================
+# Model Evaluation
+# ====================================================
+
+    print("\nStarting Model Evaluation...\n")
+
+    evaluator = ModelEvaluator()
+
+    metrics, predictions, probabilities = evaluator.evaluate(
+
+        images=x_val,
+
+        labels=y_val,
+
+    )
+
+    print("\nEvaluation Finished Successfully.")
+    
+
+    print()
+
     print("=" * 70)
     print("Pipeline Completed Successfully")
     print("=" * 70)
