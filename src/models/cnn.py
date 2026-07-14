@@ -21,24 +21,20 @@ from tensorflow.keras.layers import (
 
 
 class CNNModel:
-    """
-    CNN Model Builder
-
-    Creates a reusable CNN architecture
-    for image classification.
-    """
-
-    def __init__(
-
-        self,
-
-        input_shape,
-
-        num_classes,
-    ):
-
+    def __init__(self, filters, dropout_rate, dense_units, learning_rate, optimizer, batch_size, input_shape, num_classes):
+        # Store these parameters as class attributes so they are accessible
+        self.filters = filters
+        self.dropout_rate = dropout_rate
+        self.dense_units = dense_units
+        self.learning_rate = learning_rate
+        self.optimizer = optimizer
+        self.batch_size = batch_size
         self.input_shape = input_shape
         self.num_classes = num_classes
+        
+        # Now define your model structure using these variables
+        # For example:
+        # self.model = self.build_model()
 
     def build(self) -> Model:
         """

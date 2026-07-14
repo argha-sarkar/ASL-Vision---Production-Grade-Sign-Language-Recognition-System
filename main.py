@@ -11,6 +11,8 @@ Responsibilities:
 5. Visualize class distribution
 """
 
+import uvicorn
+
 from pprint import pprint
 
 from src.data.loader import DataLoader
@@ -33,6 +35,8 @@ from src.models.trainer import ModelTrainer
 from src.preprocessing.label_encoder import LabelEncoder
 
 from src.evaluation.evaluator import ModelEvaluator
+
+from src.api.config import settings
 
 
 def validate_dataset(dataset_name: str, dataframe):
@@ -279,7 +283,17 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-    
+
+    uvicorn.run(
+
+        "src.api.app:app",
+
+        host=settings.HOST,
+
+        port=settings.PORT,
+
+        reload=settings.DEBUG,
+
+    )
     
     

@@ -1,0 +1,26 @@
+# ==========================================================
+# docker-compose.yml
+# ==========================================================
+
+version: "3.9"
+
+services:
+
+  asl-vision-api:
+
+    build: .
+
+    container_name: asl-vision-api
+
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./models:/app/models
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+
+    environment:
+      - PYTHONUNBUFFERED=1
