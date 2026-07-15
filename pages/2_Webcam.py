@@ -105,6 +105,16 @@ else:
             self.last_confidence = 0.0
 
             self.last_time = 0
+            
+            self.sentence = ""
+            
+            self.current_stable_char = ""
+            
+            self.stable_frames = 0
+            
+            self.last_appended = False
+            
+            self.low_conf_frames = 0
 
         def recv(
             self,
@@ -114,12 +124,27 @@ else:
             image = frame.to_ndarray(format="bgr24")
 
             current = time.time()
+            
+            h, w, _ = image.shape
+            roi_size = 300
+            x1 = max(0, (w - roi_size) // 2)
+            y1 = max(0, (h - roi_size) // 2)
+            x2 = min(w, x1 + roi_size)
+            y2 = min(h, y1 + roi_size)
+            
+            roi_image = image[y1:y2, x1:x2]
+            
+            # Flip horizontally to correct for webcam mirroring
+            roi_image = cv2.flip(roi_image, 1)
+            
+            # Match color space of 1_Predict_Image.py (RGB)
+            roi_image_rgb = cv2.cvtColor(roi_image, cv2.COLOR_BGR2RGB)
 
             if current - self.last_time > 0.25:
 
                 try:
 
-                    result = self.predictor.predict(image)
+                    result = self.predictor.predict(roi_image_rgb)
 
                     prediction = result["prediction"]
 
@@ -129,16 +154,42 @@ else:
                         prediction,
                         int,
                     ):
-
                         prediction = CLASS_NAMES[prediction]
+                    elif isinstance(prediction, str) and prediction.isdigit():
+                        prediction = CLASS_NAMES[int(prediction)]
 
                     self.last_prediction = prediction
 
                     self.last_confidence = confidence
 
-                except Exception:
+                    if confidence > 0.7:
+                        self.low_conf_frames = 0
+                        if prediction == self.current_stable_char:
+                            self.stable_frames += 1
+                        else:
+                            self.current_stable_char = prediction
+                            self.stable_frames = 1
+                            self.last_appended = False
 
-                    pass
+                        if self.stable_frames >= 4 and not self.last_appended:
+                            self.sentence += prediction
+                            self.last_appended = True
+                    else:
+                        self.current_stable_char = ""
+                        self.stable_frames = 0
+                        self.last_appended = False
+                        
+                        self.low_conf_frames += 1
+                        if self.low_conf_frames == 8:
+                            if len(self.sentence) > 0 and self.sentence[-1] != " ":
+                                self.sentence += " "
+
+                    if len(self.sentence) > 35:
+                        self.sentence = self.sentence[-35:]
+
+                except Exception as e:
+                    import traceback
+                    traceback.print_exc()
 
                 self.last_time = current
 
@@ -147,6 +198,23 @@ else:
                 (10, 10),
                 (350, 90),
                 (0, 255, 0),
+                -1,
+            )
+            
+            cv2.rectangle(
+                image,
+                (x1, y1),
+                (x2, y2),
+                (255, 0, 0),
+                2,
+            )
+            
+            # Sentence background at the bottom
+            cv2.rectangle(
+                image,
+                (0, h - 60),
+                (w, h),
+                (0, 0, 0),
                 -1,
             )
 
@@ -167,6 +235,16 @@ else:
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.7,
                 (0, 0, 0),
+                2,
+            )
+            
+            cv2.putText(
+                image,
+                f"Sentence: {self.sentence}",
+                (20, h - 20),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (255, 255, 255),
                 2,
             )
 
